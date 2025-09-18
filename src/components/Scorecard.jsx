@@ -15,6 +15,8 @@ export default function Scorecard({ game }) {
   const [appears, setAppears] = useState(false);
   const [homeName, setHomeName] = useState();
   const [awayName, setAwayName] = useState();
+  const [homeAbbreviation, setHomeAbbreviation] = useState();
+  const [awayAbbreviation, setAwayAbbreviation] = useState();
   const [homePoints, setHomePoints] = useState();
   const [awayPoints, setAwayPoints] = useState();
   const [homeColor, setHomeColor] = useState();
@@ -32,6 +34,8 @@ export default function Scorecard({ game }) {
     ) {
       setHomeName(home_team_data.school);
       setAwayName(away_team_data.school);
+      setHomeAbbreviation(home_team_data.abbreviation);
+      setAwayAbbreviation(away_team_data.abbreviation);
       setHomePoints(game.home_points);
       setAwayPoints(game.away_points);
       setHomeColor(home_team_data.color);
@@ -67,27 +71,47 @@ export default function Scorecard({ game }) {
     <div>
       {appears && (
         <li className="scorecard">
-          <div className="scorecard-away-points-data">
-            <div className="scorecard-logo-name">
-              <img
-                src={awayLogo}
-                alt={`${awayName}'s Logo`}
-                className="scorecard-logo"
-              />
-              <h4 style={{ color: awayColor }}>{awayName}</h4>
+          <div className="scorecard-data">
+            <div className="scorecard-away-points-data">
+              <div className="scorecard-logo-name">
+                <img
+                  src={awayLogo}
+                  alt={`${awayName}'s Logo`}
+                  className="scorecard-logo"
+                />
+                <h4 style={{ color: awayColor }}>{awayName}</h4>
+              </div>
+              <h2>{awayPoints}</h2>
             </div>
-            <h2>{awayPoints}</h2>
+            <div className="scorecard-home-points-data">
+              <div className="scorecard-logo-name">
+                <img
+                  src={homeLogo}
+                  alt={`${homeName}'s Logo`}
+                  className="scorecard-logo"
+                />
+                <h4 style={{ color: homeColor }}>{homeName}</h4>
+              </div>
+              <h2>{homePoints}</h2>
+            </div>
           </div>
-          <div className="scorecard-home-points-data">
-            <div className="scorecard-logo-name">
-              <img
-                src={homeLogo}
-                alt={`${homeName}'s Logo`}
-                className="scorecard-logo"
-              />
-              <h4 style={{ color: homeColor }}>{homeName}</h4>
-            </div>
-            <h2>{homePoints}</h2>
+          <div className="scorecard-interaction">
+            <button
+              // The placeBet onClick doesn't work yet.
+              onClick={() => placeBet(game.id, game.away)}
+              className="scorecard-bet-btn"
+              style={{ background: awayColor }}
+            >
+              Bet {awayAbbreviation}
+            </button>
+            <button
+              // The placeBet onClick doesn't work yet.
+              onClick={() => placeBet(game.id, game.home)}
+              className="scorecard-bet-btn"
+              style={{ background: homeColor }}
+            >
+              Bet {homeAbbreviation}
+            </button>
           </div>
           {/* <div className="scorecard-clock">
             <h4 className="scorecard-clock-item">{isFinal}</h4>
