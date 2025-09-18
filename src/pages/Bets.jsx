@@ -1,9 +1,9 @@
 import { useState } from "react";
 
 export default function Bets() {
-  // A bet should contain:
-  // Team wagered on, spread, amount
-  // Game data (opponent, score, time remaining, etc.)
+  //   // A bet should contain:
+  //   // Team wagered on, spread, amount
+  //   // Game data (opponent, score, time remaining, etc.)
   const [games] = useState([
     {
       id: 1,
@@ -25,70 +25,68 @@ export default function Bets() {
     },
   ]);
 
-  const bet1 = {
-    teamWager: "LSU",
-    amountWagered: 50,
-    gameId: 3,
-  };
+  const [bets, setBets] = useState([]);
+  const [amount, setAmount] = useState(50);
 
-  // Function here
-
-  const getScore = (betId) => {
-    const game = games.find((game) => game.id === betId);
-    return game;
-  };
-
-  const [bets, setBets] = useState([bet1]);
   const placeBet = (gameId, team) => {
-    setBets([bets, { gameId, team }]);
+    const game = games.find((g) => g.id === gameId);
+    const newBet = {
+      gameId,
+      team,
+      amount,
+      spread: game.spread,
+      matchup: `${game.away} @ ${game.home}`,
+    };
+    setBets([...bets, newBet]);
   };
-  console.log(bets);
+
   return (
     <>
       <div className="bets-page">
-        <h2> Place Bets </h2>
+        <h2>Place Bets</h2>
+        <label>
+          Wager Amount:{" "}
+          <select
+            value={amount}
+            onChange={(e) => setAmount(Number(e.target.value))}
+          >
+            {[50, 100, 150, 200, 250, 300, 350, 400, 450, 500].map((value) => (
+              <option key={value}>{value}</option>
+            ))}
+          </select>
+        </label>
+
         {games.map((game) => (
           <div key={game.id} className="game-card">
             <h3>
+              {" "}
               {game.away} @ {game.home}
             </h3>
             <p>Spread: {game.spread}</p>
             <button onClick={() => placeBet(game.id, game.home)}>
-              {" "}
               Bet {game.home}
             </button>
             <button onClick={() => placeBet(game.id, game.away)}>
-              {" "}
               Bet {game.away}
             </button>
           </div>
         ))}
       </div>
+
       <div className="your-bets">
-        <h2> My Bets </h2>
+        <h2>My Bets</h2>
         {bets.length === 0 ? (
           <p>No Bets Placed!</p>
         ) : (
           <ul>
             {bets.map((bet) => (
-              <li>
-                <p value={() => getScore(bet.gameId)}></p>
-                {/*  Grab the value the function returns and display it */}
-                <p>{bet.teamWager}</p>
-                <p>{bet.amountWagered}</p>
+              <li key={bet.id}>
+                {bet.team} ({bet.spread}) · {bet.matchup} — ${bet.amount}
               </li>
             ))}
-            <p>What should we show if there are bets placed?</p>
           </ul>
         )}
       </div>
     </>
   );
 }
-// <ul>
-//   {bets.map((bet, index) => (
-//     const game = game.find((g) => g.id === bet.gameId);
-//     return (
-//       <li key={index}>
-//         {bet.team}
-//       </li>
