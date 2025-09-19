@@ -1,32 +1,39 @@
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState } from "react";
 import useQuery from "../api/useQuery";
-
+import Alert from "@mui/material/Alert";
+import CancelIcon from "@mui/icons-material/Cancel";
 // I'm going to pass in a game object that will include the team names, the score, and time remaining.
 // I may also eventually pass in a bets object that will include relevant information for that data.
 export default function Scorecard({ game }) {
   // console.log(game);
   // console.log(game.home_team_id, game.away_team_id);
   const { data: home_team_data } = useQuery(
-    `/teams/team_id/${game.home_team_id}`
+    `/teams/team_id/${game.home_team.id}`
   );
+  // For historical games, use game.home_team_id and update the data below accordingly.
   const { data: away_team_data } = useQuery(
-    `/teams/team_id/${game.away_team_id}`
+    `/teams/team_id/${game.away_team.id}`
   );
   const [appears, setAppears] = useState(false);
+  const [startDate, setStartDate] = useState();
   const [homeName, setHomeName] = useState();
   const [awayName, setAwayName] = useState();
   const [homeAbbreviation, setHomeAbbreviation] = useState();
   const [awayAbbreviation, setAwayAbbreviation] = useState();
-  const [homePoints, setHomePoints] = useState();
-  const [awayPoints, setAwayPoints] = useState();
   const [homeColor, setHomeColor] = useState();
   const [awayColor, setAwayColor] = useState();
   const [homeLogo, setHomeLogo] = useState();
   const [awayLogo, setAwayLogo] = useState();
-  const [isFinal, setIsFinal] = useState();
+  const [spread, setSpread] = useState();
+  const [favoredTeam, setFavoredTeam] = useState();
 
   const [showPopup, setShowPopup] = useState(false);
   const [betTeam, setBetTeam] = useState();
+  const [betInfo, setBetInfo] = useState();
+  const [amount, setAmount] = useState(50);
+
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+  const [showCanceledAlert, setShowCanceledAlert] = useState(false);
 
   useEffect(() => {
     if (
@@ -35,21 +42,51 @@ export default function Scorecard({ game }) {
       Object.keys(home_team_data).length > 0 &&
       Object.keys(away_team_data).length > 0
     ) {
+      // setStartDate(Date(game.start_date));
       setHomeName(home_team_data.school);
       setAwayName(away_team_data.school);
       setHomeAbbreviation(home_team_data.abbreviation);
       setAwayAbbreviation(away_team_data.abbreviation);
-      setHomePoints(game.home_points);
-      setAwayPoints(game.away_points);
       setHomeColor(home_team_data.color);
       setAwayColor(away_team_data.color);
       setHomeLogo(home_team_data.logos[0]);
       setAwayLogo(away_team_data.logos[0]);
-      setIsFinal(game.completed);
-      console.log(homeLogo);
+      if (game.betting.spread < 0) {
+        setSpread(game.betting.spread);
+        setFavoredTeam(home_team_data.abbreviation);
+      } else if (game.betting.spread > 0) {
+        setSpread(-game.betting.spread);
+        setFavoredTeam(away_team_data.abbreviation);
+      }
       setAppears(true);
     }
   }, [home_team_data, away_team_data]);
+
+  function showBetInformation(selectedTeam) {
+    console.log(selectedTeam);
+    if (favoredTeam === selectedTeam.abbreviation) {
+      setBetInfo(`Bet ${selectedTeam.school} at ${spread}`);
+    } else if (favoredTeam !== selectedTeam.abbreviation) {
+      const underdogSpread = Math.abs(spread);
+      setBetInfo(`Bet ${selectedTeam.school} at +${underdogSpread}`);
+    }
+  }
+
+  function displayAlert(isSuccess) {
+    if (isSuccess) {
+      setShowSuccessAlert(true);
+      setTimeout(() => {
+        setShowSuccessAlert(false);
+        setShowPopup(false);
+      }, 4000);
+    } else {
+      setShowPopup(false);
+      setShowCanceledAlert(true);
+      setTimeout(() => {
+        setShowCanceledAlert(false);
+      }, 4000);
+    }
+  }
 
   // const { home_points, away_points, time, quarter, completed } = game;
   // const { school: homeSchool, color: homeColor } = home_team_data;
@@ -84,7 +121,12 @@ export default function Scorecard({ game }) {
                 />
                 <h4 style={{ color: awayColor }}>{awayName}</h4>
               </div>
-              <h2>{awayPoints}</h2>
+            </div>
+            <div className="scorecard-details">
+              {/* <p>Time goes here</p> */}
+              <h5>
+                {favoredTeam} {spread}
+              </h5>
             </div>
             <div className="scorecard-home-points-data">
               <div className="scorecard-logo-name">
@@ -95,7 +137,6 @@ export default function Scorecard({ game }) {
                 />
                 <h4 style={{ color: homeColor }}>{homeName}</h4>
               </div>
-              <h2>{homePoints}</h2>
             </div>
           </div>
           <div className="scorecard-interaction">
@@ -104,6 +145,8 @@ export default function Scorecard({ game }) {
               onClick={() => {
                 setShowPopup(!showPopup);
                 setBetTeam(away_team_data);
+                console.log(favoredTeam, away_team_data.abbreviation);
+                showBetInformation(away_team_data);
               }}
               className="scorecard-bet-btn"
               style={{ background: awayColor }}
@@ -115,6 +158,8 @@ export default function Scorecard({ game }) {
               onClick={() => {
                 setShowPopup(!showPopup);
                 setBetTeam(home_team_data);
+                console.log(favoredTeam, home_team_data.abbreviation);
+                showBetInformation(home_team_data);
               }}
               className="scorecard-bet-btn"
               style={{ background: homeColor }}
@@ -123,14 +168,52 @@ export default function Scorecard({ game }) {
             </button>
           </div>
           {showPopup && (
-            <>
+            <div className="scorecard-bet-section">
+              <h2 className="scorecard-bet-heading">Your Pick:</h2>
               <img
                 src={betTeam.logos[0]}
                 alt={`${betTeam}'s logo`}
                 className="bet-team-img"
               ></img>
-              <button onClick={() => setShowPopup(false)}>Dismiss popup</button>
-            </>
+              <h4>{betInfo}</h4>
+              <label>
+                Wager Amount:{" "}
+                <select
+                  value={amount}
+                  onChange={(e) => setAmount(Number(e.target.value))}
+                >
+                  {[50, 100, 150, 200, 250, 300, 350, 400, 450, 500].map(
+                    (value) => (
+                      <option key={value}>{value}</option>
+                    )
+                  )}
+                </select>
+              </label>
+              <div className="scorecared-bet-buttons">
+                <button
+                  onClick={() => displayAlert(false)}
+                  className="scorecard-cancel-bet-btn"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    // submitBet(amount);
+                    // Add actual logic and make sure the bet was successful before showing the alert.
+                    displayAlert(true);
+                  }}
+                  className="scorecard-place-bet-btn"
+                >
+                  Submit
+                </button>
+              </div>
+            </div>
+          )}
+          {showSuccessAlert && <Alert severity="success">Bet placed.</Alert>}
+          {showCanceledAlert && (
+            <Alert icon={<CancelIcon fontSize="inherit" />} severity="error">
+              Bet canceled.
+            </Alert>
           )}
           {/* <div className="scorecard-clock">
             <h4 className="scorecard-clock-item">{isFinal}</h4>

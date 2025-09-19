@@ -4,10 +4,11 @@ import useQuery from "../api/useQuery";
 
 export default function Scores() {
   // In reality, we'll likely fetch the color using a query from the team name, but for now I'm hard-coding it.
-  const { data, loading, error } = useQuery("/teams/106"); //No tag provided for now.
-  const { data: games } = useQuery("/games");
+  const { data: games, loading, error } = useQuery("/games");
+  // To show past games, use the above query and map "games" instead of futureGames.
   const { data: game } = useQuery("/games/1");
-  if (loading || !data) return <p>Loading...</p>;
+  const { data: futureGames } = useQuery("/upcoming");
+  if (loading || !games) return <p>Loading...</p>;
   if (error) return <p>Sorry! {error}</p>;
 
   const testGame = game?.rows[0];
@@ -51,15 +52,10 @@ export default function Scores() {
   // Create a function that can grab the team by the team_id after getting a game.
   // This may require some additions to the backend.
 
-  const TnObject = data;
-
-  console.log(TnObject);
-  console.log(games);
-  console.log(home_team_id, away_team_id);
   return (
     <ul>
-      {games?.map((game) => (
-        <Scorecard game={game} key={game.id} />
+      {futureGames?.map((game) => (
+        <Scorecard game={game} key={game.game_id} />
       ))}
     </ul>
   );
