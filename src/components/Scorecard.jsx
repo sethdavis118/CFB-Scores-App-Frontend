@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import useQuery from "../api/useQuery";
 
 // I'm going to pass in a game object that will include the team names, the score, and time remaining.
@@ -24,6 +24,9 @@ export default function Scorecard({ game }) {
   const [homeLogo, setHomeLogo] = useState();
   const [awayLogo, setAwayLogo] = useState();
   const [isFinal, setIsFinal] = useState();
+
+  const [showPopup, setShowPopup] = useState(false);
+  const [betTeam, setBetTeam] = useState();
 
   useEffect(() => {
     if (
@@ -98,7 +101,10 @@ export default function Scorecard({ game }) {
           <div className="scorecard-interaction">
             <button
               // The placeBet onClick doesn't work yet.
-              onClick={() => placeBet(game.id, game.away)}
+              onClick={() => {
+                setShowPopup(!showPopup);
+                setBetTeam(away_team_data);
+              }}
               className="scorecard-bet-btn"
               style={{ background: awayColor }}
             >
@@ -106,13 +112,26 @@ export default function Scorecard({ game }) {
             </button>
             <button
               // The placeBet onClick doesn't work yet.
-              onClick={() => placeBet(game.id, game.home)}
+              onClick={() => {
+                setShowPopup(!showPopup);
+                setBetTeam(home_team_data);
+              }}
               className="scorecard-bet-btn"
               style={{ background: homeColor }}
             >
               Bet {homeAbbreviation}
             </button>
           </div>
+          {showPopup && (
+            <>
+              <img
+                src={betTeam.logos[0]}
+                alt={`${betTeam}'s logo`}
+                className="bet-team-img"
+              ></img>
+              <button onClick={() => setShowPopup(false)}>Dismiss popup</button>
+            </>
+          )}
           {/* <div className="scorecard-clock">
             <h4 className="scorecard-clock-item">{isFinal}</h4>
             <p className="scorecard-clock-item">{time}</p>

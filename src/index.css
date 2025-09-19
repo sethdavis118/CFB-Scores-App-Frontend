@@ -79,6 +79,8 @@ main {
   box-shadow: 0 4px 10px gray;
   text-align: center;
   transition: transform 0.2s;
+  /* transition-delay: 100ms;
+  transition-property: margin-bottom; */
 }
 
 .scorecard:hover {
@@ -146,6 +148,11 @@ main {
 
 .scorecard-bet-btn:active {
   transform: scale(1.05);
+}
+
+.bet-team-img {
+  width: 200px;
+  height: auto;
 }
 
 /* Account Page */
