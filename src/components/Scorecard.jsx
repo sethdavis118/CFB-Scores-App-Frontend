@@ -8,11 +8,11 @@ export default function Scorecard({ game }) {
   console.log(game);
   // console.log(game.home_team_id, game.away_team_id);
   const { data: home_team_data } = useQuery(
-    `/teams/team_id/${game.homeTeam.id}`
+    `/teams/team_id/${game.home_team_id}`
   );
   // For historical games, use game.home_team_id and update the data below accordingly.
   const { data: away_team_data } = useQuery(
-    `/teams/team_id/${game.awayTeam.id}`
+    `/teams/team_id/${game.away_team_id}`
   );
   const [appears, setAppears] = useState(false);
   const [startDate, setStartDate] = useState();
@@ -58,16 +58,16 @@ export default function Scorecard({ game }) {
       setAwayColor(away_team_data.color);
       setHomeLogo(home_team_data.logos[0]);
       setAwayLogo(away_team_data.logos[0]);
-      if (game.betting.spread < 0) {
-        setSpread(game.betting.spread);
-        setFavoredTeam(home_team_data.abbreviation);
-      } else if (game.betting.spread > 0) {
-        setSpread(-game.betting.spread);
-        setFavoredTeam(away_team_data.abbreviation);
-      }
+      // if (game.betting.spread < 0) {
+      //   setSpread(game.betting.spread);
+      //   setFavoredTeam(home_team_data.abbreviation);
+      // } else if (game.betting.spread > 0) {
+      //   setSpread(-game.betting.spread);
+      //   setFavoredTeam(away_team_data.abbreviation);
+      // }
 
-      setHomeTeamPoints(game.homeTeam.points);
-      setAwayTeamPoints(game.awayTeam.points);
+      // setHomeTeamPoints(game.homeTeam.points);
+      // setAwayTeamPoints(game.awayTeam.points);
       setStatus(game.status);
       setPeriod(game.period);
       setClock(game.clock);
@@ -76,15 +76,15 @@ export default function Scorecard({ game }) {
     }
   }, [home_team_data, away_team_data]);
 
-  function showBetInformation(selectedTeam) {
-    console.log(selectedTeam);
-    if (favoredTeam === selectedTeam.abbreviation) {
-      setBetInfo(`Bet ${selectedTeam.school} at ${spread}`);
-    } else if (favoredTeam !== selectedTeam.abbreviation) {
-      const underdogSpread = Math.abs(spread);
-      setBetInfo(`Bet ${selectedTeam.school} at +${underdogSpread}`);
-    }
-  }
+  // function showBetInformation(selectedTeam) {
+  //   console.log(selectedTeam);
+  //   if (favoredTeam === selectedTeam.abbreviation) {
+  //     setBetInfo(`Bet ${selectedTeam.school} at ${spread}`);
+  //   } else if (favoredTeam !== selectedTeam.abbreviation) {
+  //     const underdogSpread = Math.abs(spread);
+  //     setBetInfo(`Bet ${selectedTeam.school} at +${underdogSpread}`);
+  //   }
+  // }
 
   function displayAlert(isSuccess) {
     if (isSuccess) {
@@ -168,7 +168,7 @@ export default function Scorecard({ game }) {
                 setShowPopup(!showPopup);
                 setBetTeam(away_team_data);
                 console.log(favoredTeam, away_team_data.abbreviation);
-                showBetInformation(away_team_data);
+                // showBetInformation(away_team_data);
               }}
               className="scorecard-bet-btn"
               style={{ background: awayColor }}
@@ -181,7 +181,7 @@ export default function Scorecard({ game }) {
                 setShowPopup(!showPopup);
                 setBetTeam(home_team_data);
                 console.log(favoredTeam, home_team_data.abbreviation);
-                showBetInformation(home_team_data);
+                // showBetInformation(home_team_data);
               }}
               className="scorecard-bet-btn"
               style={{ background: homeColor }}

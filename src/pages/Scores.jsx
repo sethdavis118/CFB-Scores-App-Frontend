@@ -4,30 +4,30 @@ import useQuery from "../api/useQuery";
 
 export default function Scores() {
   const [liveGames, setLiveGames] = useState();
-  useEffect(() => {
-    async function fetchLiveGames() {
-      const response = await fetch(
-        "https://api.collegefootballdata.com/scoreboard?classification=fbs",
-        {
-          method: "GET",
-          headers: {
-            accept: "application/json",
-            Authorization: `Bearer ${
-              import.meta.env.VITE_SCOREBOARD_BEARER_TOKEN
-            }`,
-          },
-        }
-      );
-      console.log(response);
-      const isJson = /json/.test(response.headers.get("Content-Type"));
-      const result = isJson ? await response.json() : undefined;
-      if (!response.ok) throw Error(result?.message ?? "Something went wrong.");
-      console.log(result);
-      setLiveGames(result);
-      return result;
-    }
-    fetchLiveGames();
-  }, []);
+  // useEffect(() => {
+  //   async function fetchLiveGames() {
+  //     const response = await fetch(
+  //       "https://api.collegefootballdata.com/scoreboard?classification=fbs",
+  //       {
+  //         method: "GET",
+  //         headers: {
+  //           accept: "application/json",
+  //           Authorization: `Bearer ${
+  //             import.meta.env.VITE_SCOREBOARD_BEARER_TOKEN
+  //           }`,
+  //         },
+  //       }
+  //     );
+  //     console.log(response);
+  //     const isJson = /json/.test(response.headers.get("Content-Type"));
+  //     const result = isJson ? await response.json() : undefined;
+  //     if (!response.ok) throw Error(result?.message ?? "Something went wrong.");
+  //     console.log(result);
+  //     setLiveGames(result);
+  //     return result;
+  //   }
+  //   fetchLiveGames();
+  // }, []);
   const { data: games, loading, error } = useQuery("/games");
   // To show past games, use the above query and map "games" instead of futureGames.
   const { data: game } = useQuery("/games/1");
@@ -79,7 +79,7 @@ export default function Scores() {
 
   return (
     <ul>
-      {liveGames?.map((game) => (
+      {games?.map((game) => (
         <Scorecard game={game} key={game.game_id} />
       ))}
     </ul>
