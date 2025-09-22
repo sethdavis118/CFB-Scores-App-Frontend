@@ -12,8 +12,9 @@ export default function Scores() {
           method: "GET",
           headers: {
             accept: "application/json",
-            Authorization:
-              "Bearer Xa+Jq3M6AXdA8wapFspTVIKbeWpAcbn5ef7z28hk6JKp3LRPzjXMJCPPBuG8ldkm",
+            Authorization: `Bearer ${
+              import.meta.env.VITE_SCOREBOARD_BEARER_TOKEN
+            }`,
           },
         }
       );
