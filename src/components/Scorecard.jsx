@@ -5,14 +5,14 @@ import CancelIcon from "@mui/icons-material/Cancel";
 // I'm going to pass in a game object that will include the team names, the score, and time remaining.
 // I may also eventually pass in a bets object that will include relevant information for that data.
 export default function Scorecard({ game }) {
-  // console.log(game);
+  console.log(game);
   // console.log(game.home_team_id, game.away_team_id);
   const { data: home_team_data } = useQuery(
-    `/teams/team_id/${game.home_team.id}`
+    `/teams/team_id/${game.homeTeam.id}`
   );
   // For historical games, use game.home_team_id and update the data below accordingly.
   const { data: away_team_data } = useQuery(
-    `/teams/team_id/${game.away_team.id}`
+    `/teams/team_id/${game.awayTeam.id}`
   );
   const [appears, setAppears] = useState(false);
   const [startDate, setStartDate] = useState();
@@ -26,6 +26,13 @@ export default function Scorecard({ game }) {
   const [awayLogo, setAwayLogo] = useState();
   const [spread, setSpread] = useState();
   const [favoredTeam, setFavoredTeam] = useState();
+
+  // Testing some data
+  const [homeTeamPoints, setHomeTeamPoints] = useState();
+  const [awayTeamPoints, setAwayTeamPoints] = useState();
+  const [status, setStatus] = useState();
+  const [period, setPeriod] = useState();
+  const [clock, setClock] = useState();
 
   const [showPopup, setShowPopup] = useState(false);
   const [betTeam, setBetTeam] = useState();
@@ -58,6 +65,13 @@ export default function Scorecard({ game }) {
         setSpread(-game.betting.spread);
         setFavoredTeam(away_team_data.abbreviation);
       }
+
+      setHomeTeamPoints(game.homeTeam.points);
+      setAwayTeamPoints(game.awayTeam.points);
+      setStatus(game.status);
+      setPeriod(game.period);
+      setClock(game.clock);
+
       setAppears(true);
     }
   }, [home_team_data, away_team_data]);
@@ -121,9 +135,16 @@ export default function Scorecard({ game }) {
                 />
                 <h4 style={{ color: awayColor }}>{awayName}</h4>
               </div>
+              <h3>{awayTeamPoints}</h3>
             </div>
             <div className="scorecard-details">
               {/* <p>Time goes here</p> */}
+              {status === "in_progress" && (
+                <p>
+                  {period} {clock}
+                </p>
+              )}
+              {status === "completed" && <p>Final</p>}
               <h5>
                 {favoredTeam} {spread}
               </h5>
@@ -137,6 +158,7 @@ export default function Scorecard({ game }) {
                 />
                 <h4 style={{ color: homeColor }}>{homeName}</h4>
               </div>
+              <h3>{homeTeamPoints}</h3>
             </div>
           </div>
           <div className="scorecard-interaction">

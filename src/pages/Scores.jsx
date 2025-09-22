@@ -1,9 +1,33 @@
 import Scorecard from "../components/Scorecard";
-
+import { useState, useEffect } from "react";
 import useQuery from "../api/useQuery";
 
 export default function Scores() {
-  // In reality, we'll likely fetch the color using a query from the team name, but for now I'm hard-coding it.
+  const [liveGames, setLiveGames] = useState();
+  useEffect(() => {
+    async function fetchLiveGames() {
+      const response = await fetch(
+        "https://api.collegefootballdata.com/scoreboard?classification=fbs",
+        {
+          method: "GET",
+          headers: {
+            accept: "application/json",
+            Authorization: `Bearer ${
+              import.meta.env.VITE_SCOREBOARD_BEARER_TOKEN
+            }`,
+          },
+        }
+      );
+      console.log(response);
+      const isJson = /json/.test(response.headers.get("Content-Type"));
+      const result = isJson ? await response.json() : undefined;
+      if (!response.ok) throw Error(result?.message ?? "Something went wrong.");
+      console.log(result);
+      setLiveGames(result);
+      return result;
+    }
+    fetchLiveGames();
+  }, []);
   const { data: games, loading, error } = useQuery("/games");
   // To show past games, use the above query and map "games" instead of futureGames.
   const { data: game } = useQuery("/games/1");
@@ -14,6 +38,7 @@ export default function Scores() {
   const testGame = game?.rows[0];
   const home_team_id = testGame?.home_team_id;
   const away_team_id = testGame?.away_team_id;
+  console.log(liveGames);
 
   // --- Sample data ---
   // const game1 = {
@@ -54,7 +79,7 @@ export default function Scores() {
 
   return (
     <ul>
-      {futureGames?.map((game) => (
+      {liveGames?.map((game) => (
         <Scorecard game={game} key={game.game_id} />
       ))}
     </ul>
