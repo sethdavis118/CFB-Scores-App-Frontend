@@ -3,8 +3,8 @@ import { useNavigate } from "react-router";
 import useQuery from "../api/useQuery";
 
 export default function Account() {
-    const [user, setUser] = useState();
-    useEffect(() => {
+  const [user, setUser] = useState();
+  useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
       setLoading(false);
@@ -29,16 +29,14 @@ export default function Account() {
     }
 
     fetchUser();
-
   }, []);
 
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-    console.log(user);
-    console.log(user?.favoriteTeam);
-    const {data: team}= useQuery(`/teams/team_id/${user?.favorite_team}`)
+  console.log(user);
+  console.log(user?.favoriteTeam);
+  const { data: team } = useQuery(`/teams/team_id/${user?.favorite_team}`);
   console.log(team);
-
 
   if (loading) return <p>Loading...</p>;
 
@@ -47,8 +45,12 @@ export default function Account() {
       <div>
         <h1>Account</h1>
         <p>You are not logged in.</p>
-        <button onClick={() => navigate("/register")}>Register</button>
-        <button onClick={() => navigate("/login")}>Login</button>
+        <button onClick={() => navigate("/register")} className="login-btn">
+          Register
+        </button>
+        <button onClick={() => navigate("/login")} className="login-btn">
+          Login
+        </button>
       </div>
     );
   }
@@ -63,4 +65,3 @@ export default function Account() {
     </div>
   );
 }
-

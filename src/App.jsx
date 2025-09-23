@@ -11,7 +11,6 @@ import Scores from "./pages/Scores";
 import LoginForm from "./components/LoginForm";
 import RegisterForm from "./components/RegisterForm";
 
-
 function App() {
   return (
     <Routes>
@@ -21,18 +20,18 @@ function App() {
         <Route path="/account" element={<Account />} />
         <Route path="/bets" element={<Bets />} />
         <Route path="/leaderboard" element={<Leaderboard />} />
+        <Route path="/login" element={<LoginForm />} />
+        <Route path="/register" element={<RegisterForm />} />
         <Route path="/scores" element={<Scores />} />
+
         <Route path="*" element={<Error404 />} />
       </Route>
 
       {/* Authentication routes */}
-      <Route path="/login" element={<LoginForm />} />
-      <Route path="/register" element={<RegisterForm />} />
 
       <Route path="/launch" element={<Launch />} />
     </Routes>
   );
 }
-
 
 export default App;
