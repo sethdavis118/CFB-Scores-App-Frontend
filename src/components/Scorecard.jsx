@@ -8,11 +8,11 @@ export default function Scorecard({ game }) {
   console.log(game);
   // console.log(game.home_team_id, game.away_team_id);
   const { data: home_team_data } = useQuery(
-    `/teams/team_id/${game.home_team_id}`
+    `/teams/team_id/${game.homeTeam.id}`
   );
   // For historical games, use game.home_team_id and update the data below accordingly.
   const { data: away_team_data } = useQuery(
-    `/teams/team_id/${game.away_team_id}`
+    `/teams/team_id/${game.awayTeam.id}`
   );
   const [appears, setAppears] = useState(false);
   const [startDate, setStartDate] = useState();
@@ -58,16 +58,16 @@ export default function Scorecard({ game }) {
       setAwayColor(away_team_data.color);
       setHomeLogo(home_team_data.logos[0]);
       setAwayLogo(away_team_data.logos[0]);
-      // if (game.betting.spread < 0) {
-      //   setSpread(game.betting.spread);
-      //   setFavoredTeam(home_team_data.abbreviation);
-      // } else if (game.betting.spread > 0) {
-      //   setSpread(-game.betting.spread);
-      //   setFavoredTeam(away_team_data.abbreviation);
-      // }
+      if (game.betting.spread < 0) {
+        setSpread(game.betting.spread);
+        setFavoredTeam(home_team_data.abbreviation);
+      } else if (game.betting.spread > 0) {
+        setSpread(-game.betting.spread);
+        setFavoredTeam(away_team_data.abbreviation);
+      }
 
-      // setHomeTeamPoints(game.homeTeam.points);
-      // setAwayTeamPoints(game.awayTeam.points);
+      setHomeTeamPoints(game.homeTeam.points);
+      setAwayTeamPoints(game.awayTeam.points);
       setStatus(game.status);
       setPeriod(game.period);
       setClock(game.clock);
@@ -76,15 +76,15 @@ export default function Scorecard({ game }) {
     }
   }, [home_team_data, away_team_data]);
 
-  // function showBetInformation(selectedTeam) {
-  //   console.log(selectedTeam);
-  //   if (favoredTeam === selectedTeam.abbreviation) {
-  //     setBetInfo(`Bet ${selectedTeam.school} at ${spread}`);
-  //   } else if (favoredTeam !== selectedTeam.abbreviation) {
-  //     const underdogSpread = Math.abs(spread);
-  //     setBetInfo(`Bet ${selectedTeam.school} at +${underdogSpread}`);
-  //   }
-  // }
+  function showBetInformation(selectedTeam) {
+    // console.log(selectedTeam);
+    if (favoredTeam === selectedTeam.abbreviation) {
+      setBetInfo(`Bet ${selectedTeam.school} at ${spread}`);
+    } else if (favoredTeam !== selectedTeam.abbreviation) {
+      const underdogSpread = Math.abs(spread);
+      setBetInfo(`Bet ${selectedTeam.school} at +${underdogSpread}`);
+    }
+  }
 
   function displayAlert(isSuccess) {
     if (isSuccess) {
@@ -101,11 +101,6 @@ export default function Scorecard({ game }) {
       }, 4000);
     }
   }
-
-  // const { home_points, away_points, time, quarter, completed } = game;
-  // const { school: homeSchool, color: homeColor } = home_team_data;
-  // const { school: awaySchool, color: awayColor } = away_team_data;
-  // // In reality, we'll likely fetch the color using a query from the team name, but for now I'm hard-coding it.
 
   // let quarterStr;
   // if (quarter === 1) {
@@ -135,7 +130,8 @@ export default function Scorecard({ game }) {
                 />
                 <h4 style={{ color: awayColor }}>{awayName}</h4>
               </div>
-              <h3>{awayTeamPoints}</h3>
+              {status === "in_progress" ||
+                (status === "completed" && <h3>{awayTeamPoints}</h3>)}
             </div>
             <div className="scorecard-details">
               {/* <p>Time goes here</p> */}
@@ -158,36 +154,41 @@ export default function Scorecard({ game }) {
                 />
                 <h4 style={{ color: homeColor }}>{homeName}</h4>
               </div>
-              <h3>{homeTeamPoints}</h3>
+              {status === "in_progress" ||
+                (status === "completed" && <h3>{homeTeamPoints}</h3>)}
             </div>
           </div>
           <div className="scorecard-interaction">
-            <button
-              // The placeBet onClick doesn't work yet.
-              onClick={() => {
-                setShowPopup(!showPopup);
-                setBetTeam(away_team_data);
-                console.log(favoredTeam, away_team_data.abbreviation);
-                // showBetInformation(away_team_data);
-              }}
-              className="scorecard-bet-btn"
-              style={{ background: awayColor }}
-            >
-              Bet {awayAbbreviation}
-            </button>
-            <button
-              // The placeBet onClick doesn't work yet.
-              onClick={() => {
-                setShowPopup(!showPopup);
-                setBetTeam(home_team_data);
-                console.log(favoredTeam, home_team_data.abbreviation);
-                // showBetInformation(home_team_data);
-              }}
-              className="scorecard-bet-btn"
-              style={{ background: homeColor }}
-            >
-              Bet {homeAbbreviation}
-            </button>
+            {status === "completed" || status === "in_progress" || (
+              <button
+                // The placeBet onClick doesn't work yet.
+                onClick={() => {
+                  setShowPopup(!showPopup);
+                  setBetTeam(away_team_data);
+                  // console.log(favoredTeam, away_team_data.abbreviation);
+                  showBetInformation(away_team_data);
+                }}
+                className="scorecard-bet-btn"
+                style={{ background: awayColor }}
+              >
+                Bet {awayAbbreviation}
+              </button>
+            )}
+            {status === "completed" || status === "in_progress" || (
+              <button
+                // The placeBet onClick doesn't work yet.
+                onClick={() => {
+                  setShowPopup(!showPopup);
+                  setBetTeam(home_team_data);
+                  // console.log(favoredTeam, home_team_data.abbreviation);
+                  showBetInformation(home_team_data);
+                }}
+                className="scorecard-bet-btn"
+                style={{ background: homeColor }}
+              >
+                Bet {homeAbbreviation}
+              </button>
+            )}
           </div>
           {showPopup && (
             <div className="scorecard-bet-section">
