@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router";
 import useQuery from "../api/useQuery"; 
 
@@ -21,7 +21,7 @@ export default function RegisterForm() {
     e.preventDefault();
     setError("");
     try {
-      const res = await fetch("users/register", {
+      const res = await fetch("http://localhost:3000/users/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -41,7 +41,7 @@ export default function RegisterForm() {
 
       const data = await res.json();
       localStorage.setItem("token", data.token);
-      navigate("users/account");
+      navigate("/account");
     } catch (err) {
       console.error(err);
       setError("Registration failed");
