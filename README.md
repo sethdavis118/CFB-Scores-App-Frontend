@@ -1,2 +1,2 @@
-# CFB-Scores-App-Frontend
-Put description here.
+# SideLine Frontend
+Put the description here.
