@@ -1,4 +1,4 @@
-import  { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router";
 
 export default function LoginForm() {
@@ -10,36 +10,41 @@ export default function LoginForm() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
+
     try {
-      const res = await fetch("users/login", {
+      const res = await fetch("http://localhost:3000/users/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
       if (!res.ok) {
-        const msg = await res.text();
-        setError(msg);
+        const data = await res.json();
+        setError(data.error || "Login failed");
         return;
       }
 
       const data = await res.json();
       localStorage.setItem("token", data.token);
-      navigate("users/login");
+      navigate("/account");
     } catch (err) {
-      console.error(err);
-      setError("Login failed");
+      console.error("Login error:", err);
+      setError("Something went wrong");
     }
   };
 
   return (
     <div>
       <h2>Login</h2>
-      {error && <p>{error}</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
       <form onSubmit={handleLogin}>
         <div>
           <label>Email:</label>
-          <input value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
         </div>
         <div>
           <label>Password:</label>
@@ -47,13 +52,11 @@ export default function LoginForm() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
           />
         </div>
-        <button type="submit">Login</button>
+        <button type="submit">Log In</button>
       </form>
-      <p>
-        Don’t have an account? <button onClick={() => navigate("/register")}>Register here</button>
-      </p>
     </div>
   );
 }
