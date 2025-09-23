@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import useQuery from "../api/useQuery"; 
+import useQuery from "../api/useQuery";
 
 export default function RegisterForm() {
   const navigate = useNavigate();
@@ -12,16 +12,24 @@ export default function RegisterForm() {
   const [error, setError] = useState("");
 
   // Fetch teams
-  const { data: teams = [], loading: teamsLoading, error: teamsError } = useQuery("/teams");
+  const {
+    data: teams = [],
+    loading: teamsLoading,
+    error: teamsError,
+  } = useQuery("/teams");
 
   // Fetch conferences
-  const { data: conferences = [], loading: confLoading, error: confError } = useQuery("/teams/conferences");
+  const {
+    data: conferences = [],
+    loading: confLoading,
+    error: confError,
+  } = useQuery("/teams/conferences");
 
   const handleRegister = async (e) => {
     e.preventDefault();
     setError("");
     try {
-      const res = await fetch("http://localhost:3000/users/register", {
+      const res = await fetch("/users/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -58,7 +66,10 @@ export default function RegisterForm() {
       <form onSubmit={handleRegister}>
         <div>
           <label>Username:</label>
-          <input value={username} onChange={(e) => setUsername(e.target.value)} />
+          <input
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
         </div>
         <div>
           <label>Email:</label>
@@ -66,11 +77,18 @@ export default function RegisterForm() {
         </div>
         <div>
           <label>Password:</label>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
         </div>
         <div>
           <label>Favorite Team:</label>
-          <select value={favoriteTeam} onChange={(e) => setFavoriteTeam(e.target.value)}>
+          <select
+            value={favoriteTeam}
+            onChange={(e) => setFavoriteTeam(e.target.value)}
+          >
             <option value="">--Select a team--</option>
             {teams.map((team) => (
               <option key={team.id} value={team.team_id}>
@@ -81,7 +99,10 @@ export default function RegisterForm() {
         </div>
         <div>
           <label>Favorite Conference:</label>
-          <select value={favoriteConf} onChange={(e) => setFavoriteConf(e.target.value)}>
+          <select
+            value={favoriteConf}
+            onChange={(e) => setFavoriteConf(e.target.value)}
+          >
             <option value="">--Select a conference--</option>
             {conferences.map((conf, index) => (
               <option key={index} value={conf}>
@@ -99,4 +120,3 @@ export default function RegisterForm() {
     </div>
   );
 }
-
