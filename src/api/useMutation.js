@@ -15,15 +15,26 @@ export default function useMutation(method, resource, tagsToInvalidate) {
   const [data, setData] = useState();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem("token") || null);
 
   const mutate = async (body) => {
     setLoading(true);
     setError(null);
+    let result;
     try {
-      const result = await request(resource, {
-        method,
-        body: JSON.stringify(body),
-      });
+      if (token) {
+        result = await request(resource, {
+          method,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      } else {
+        result = await request(resource, {
+          method,
+          body: JSON.stringify(body),
+        });
+      }
       setData(result);
       invalidateTags(tagsToInvalidate);
     } catch (e) {
