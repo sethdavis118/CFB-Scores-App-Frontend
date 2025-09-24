@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Bets() {
   //   // A bet should contain:
@@ -39,49 +39,28 @@ export default function Bets() {
     };
     setBets([...bets, newBet]);
   };
+  useEffect(() => {
+    placeBet(1, "Tennessee");
+    placeBet(2, "Texas A&M");
+  }, []);
 
   return (
     <>
-      <div className="bets-page">
-        <h2>Place Bets</h2>
-        <label>
-          Wager Amount:{" "}
-          <select
-            value={amount}
-            onChange={(e) => setAmount(Number(e.target.value))}
-          >
-            {[50, 100, 150, 200, 250, 300, 350, 400, 450, 500].map((value) => (
-              <option key={value}>{value}</option>
-            ))}
-          </select>
-        </label>
-
-        {games.map((game) => (
-          <div key={game.id} className="game-card">
-            <h3>
-              {" "}
-              {game.away} @ {game.home}
-            </h3>
-            <p>Spread: {game.spread}</p>
-            <button onClick={() => placeBet(game.id, game.home)}>
-              Bet {game.home}
-            </button>
-            <button onClick={() => placeBet(game.id, game.away)}>
-              Bet {game.away}
-            </button>
-          </div>
-        ))}
-      </div>
-
-      <div className="your-bets">
-        <h2>My Bets</h2>
+      <h1>My Bets</h1>
+      <div className="bets-section">
         {bets.length === 0 ? (
           <p>No Bets Placed!</p>
         ) : (
-          <ul>
+          <ul className="bets-list">
             {bets.map((bet) => (
-              <li key={bet.id}>
-                {bet.team} ({bet.spread}) · {bet.matchup} — ${bet.amount}
+              <li key={bet.gameId} className="bet-items">
+                <div className="bet-items-info">
+                  <h3>
+                    {bet.team} {bet.spread}
+                  </h3>
+                  <h3>${bet.amount}</h3>
+                </div>
+                <h6 className="bet-game-info">{bet.matchup}</h6>
               </li>
             ))}
           </ul>

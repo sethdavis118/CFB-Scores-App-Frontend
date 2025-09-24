@@ -40,6 +40,7 @@ export default function Account() {
     setUser(null);
     navigate("/login");
   };
+
   if (loading) return <p>Loading...</p>;
   
   if (!user) {
@@ -47,8 +48,12 @@ export default function Account() {
       <div>
         <h1>Account</h1>
         <p>You are not logged in.</p>
-        <button onClick={() => navigate("/register")}>Register</button>
-        <button onClick={() => navigate("/login")}>Login</button>
+        <button onClick={() => navigate("/register")} className="login-btn">
+          Register
+        </button>
+        <button onClick={() => navigate("/login")} className="login-btn">
+          Login
+        </button>
       </div>
     );
   }
