@@ -11,11 +11,18 @@ export default function RegisterForm() {
   const [favoriteConf, setFavoriteConf] = useState("");
   const [error, setError] = useState("");
 
-
   // fetch teams
-  const { data: teams = [], loading: teamsLoading, error: teamsError } = useQuery("/teams");
+  const {
+    data: teams = [],
+    loading: teamsLoading,
+    error: teamsError,
+  } = useQuery("/teams");
   // fetch conferences
-  const { data: conferences = [], loading: confLoading, error: confError } = useQuery("/teams/conferences");
+  const {
+    data: conferences = [],
+    loading: confLoading,
+    error: confError,
+  } = useQuery("/teams/conferences");
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -40,7 +47,7 @@ export default function RegisterForm() {
     };
 
     try {
-      const res = await fetch("/users/register", {
+      const res = await fetch("http://localhost:3000/users/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -125,7 +132,9 @@ export default function RegisterForm() {
       </form>
       <p>
         Already have an account?{" "}
-        <button type="button" onClick={() => navigate("/login")}>Login here</button>
+        <button type="button" onClick={() => navigate("/login")}>
+          Login here
+        </button>
       </p>
     </div>
   );

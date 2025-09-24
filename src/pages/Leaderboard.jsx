@@ -1,5 +1,3 @@
-import Leadercard from "../components/Leadercard";
-
 export default function Leaderboard() {
   const user1 = {
     username: "VolsFan1",
