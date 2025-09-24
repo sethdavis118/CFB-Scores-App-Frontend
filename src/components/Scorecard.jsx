@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import useQuery from "../api/useQuery";
 import Alert from "@mui/material/Alert";
 import CancelIcon from "@mui/icons-material/Cancel";
-// I'm going to pass in a game object that will include the team names, the score, and time remaining.
-// I may also eventually pass in a bets object that will include relevant information for that data.
+
 export default function Scorecard({ game }) {
   console.log(game);
   // console.log(game.home_team_id, game.away_team_id);
@@ -27,7 +26,9 @@ export default function Scorecard({ game }) {
   const [spread, setSpread] = useState();
   const [favoredTeam, setFavoredTeam] = useState();
 
-  // Testing some data
+  const [gameId] = useState(game.id);
+  // const [userId] = useState(user.id);
+  const [token, setToken] = useState(localStorage.getItem("token") || null);
   const [homeTeamPoints, setHomeTeamPoints] = useState();
   const [awayTeamPoints, setAwayTeamPoints] = useState();
   const [status, setStatus] = useState();
@@ -41,6 +42,7 @@ export default function Scorecard({ game }) {
 
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [showCanceledAlert, setShowCanceledAlert] = useState(false);
+  const [error, setError] = useState();
 
   useEffect(() => {
     if (
@@ -86,6 +88,34 @@ export default function Scorecard({ game }) {
     }
   }
 
+  async function placeBet() {
+    console.log(gameId);
+    try {
+      const res = await fetch("http://localhost:3000/bets/place_bet", {
+        //Fix the route later
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ gameId, amount, spread }), //What belongs in here?
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        console.error(data.error);
+        setError("Placing bet failed"); // Use if this exists to check which alert to show, success or failure.
+        return;
+      }
+
+      const data = await res.json();
+      console.log(data);
+      return data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   function displayAlert(isSuccess) {
     if (isSuccess) {
       setShowSuccessAlert(true);
@@ -115,7 +145,6 @@ export default function Scorecard({ game }) {
   //   quarterStr = "Final";
   // }
 
-  // console.log(home_points);
   return (
     <div>
       {appears && (
@@ -221,7 +250,7 @@ export default function Scorecard({ game }) {
                 </button>
                 <button
                   onClick={() => {
-                    // submitBet(amount);
+                    placeBet();
                     // Add actual logic and make sure the bet was successful before showing the alert.
                     displayAlert(true);
                   }}
