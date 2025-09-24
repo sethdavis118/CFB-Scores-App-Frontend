@@ -11,39 +11,56 @@ export default function RegisterForm() {
   const [favoriteConf, setFavoriteConf] = useState("");
   const [error, setError] = useState("");
 
-  // Fetch teams
+  // fetch teams
   const { data: teams = [], loading: teamsLoading, error: teamsError } = useQuery("/teams");
-
-  // Fetch conferences
+  // fetch conferences
   const { data: conferences = [], loading: confLoading, error: confError } = useQuery("/teams/conferences");
 
   const handleRegister = async (e) => {
     e.preventDefault();
     setError("");
+
+    let validTeam = null;
+    if (favoriteTeam) {
+      const teamExists = teams.find((t) => t.id === parseInt(favoriteTeam));
+      if (!teamExists) {
+        setError("Selected team is not valid");
+        return;
+      }
+      validTeam = parseInt(favoriteTeam);
+    }
+
+    const payload = {
+      username,
+      email,
+      password,
+      favorite_team: validTeam,
+      favorite_conference: favoriteConf || null,
+    };
+
     try {
       const res = await fetch("http://localhost:3000/users/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username,
-          email,
-          password,
-          favorite_team: favoriteTeam || null,
-          favorite_conference: favoriteConf || null,
-        }),
+        body: JSON.stringify(payload),
       });
 
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        setError("Server returned invalid response");
+        return;
+      }
+
       if (!res.ok) {
-        const data = await res.json();
         setError(data.error || "Registration failed");
         return;
       }
 
-      const data = await res.json();
       localStorage.setItem("token", data.token);
       navigate("/account");
-    } catch (err) {
-      console.error(err);
+    } catch {
       setError("Registration failed");
     }
   };
@@ -73,7 +90,7 @@ export default function RegisterForm() {
           <select value={favoriteTeam} onChange={(e) => setFavoriteTeam(e.target.value)}>
             <option value="">--Select a team--</option>
             {teams.map((team) => (
-              <option key={team.id} value={team.team_id}>
+              <option key={team.id} value={team.id}>
                 {team.school} ({team.mascot})
               </option>
             ))}
@@ -94,9 +111,8 @@ export default function RegisterForm() {
       </form>
       <p>
         Already have an account?{" "}
-        <button onClick={() => navigate("/login")}>Login here</button>
+        <button type="button" onClick={() => navigate("/login")}>Login here</button>
       </p>
     </div>
   );
 }
-
