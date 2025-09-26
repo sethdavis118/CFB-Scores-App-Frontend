@@ -24,6 +24,7 @@ export default function Scorecard({ game }) {
   const [homeLogo, setHomeLogo] = useState();
   const [awayLogo, setAwayLogo] = useState();
   const [spread, setSpread] = useState();
+  const [betSpread, setBetSpread] = useState();
   const [favoredTeam, setFavoredTeam] = useState();
 
   const [gameId] = useState(game.id);
@@ -82,13 +83,16 @@ export default function Scorecard({ game }) {
     // console.log(selectedTeam);
     if (favoredTeam === selectedTeam.abbreviation) {
       setBetInfo(`Bet ${selectedTeam.school} at ${spread}`);
+      setBetSpread(spread);
     } else if (favoredTeam !== selectedTeam.abbreviation) {
       const underdogSpread = Math.abs(spread);
       setBetInfo(`Bet ${selectedTeam.school} at +${underdogSpread}`);
+      setBetSpread(underdogSpread);
     }
   }
 
   async function placeBet() {
+    const teamId = betTeam.id;
     console.log(gameId);
     try {
       const res = await fetch("http://localhost:3000/bets/place_bet", {
@@ -98,7 +102,7 @@ export default function Scorecard({ game }) {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ gameId, amount, spread }), //What belongs in here?
+        body: JSON.stringify({ gameId, teamId, amount, betSpread }), //What belongs in here?
       });
 
       if (!res.ok) {
@@ -250,6 +254,7 @@ export default function Scorecard({ game }) {
                 </button>
                 <button
                   onClick={() => {
+                    console.log(betSpread);
                     placeBet();
                     // Add actual logic and make sure the bet was successful before showing the alert.
                     displayAlert(true);

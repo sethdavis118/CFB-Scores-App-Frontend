@@ -374,6 +374,10 @@ td {
   margin: 0;
 }
 
+.betcard-logo {
+  width: 85px;
+}
+
 /* Account Page */
 .login-btn {
   border: solid;
