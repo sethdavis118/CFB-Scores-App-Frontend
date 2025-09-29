@@ -40,6 +40,7 @@ export default function Account() {
     setUser(null);
     navigate("/login");
   };
+
   if (loading) return <p>Loading...</p>;
   
   if (!user) {

@@ -1,5 +1,3 @@
-import Leadercard from "../components/Leadercard";
-
 export default function Leaderboard() {
   const user1 = {
     username: "VolsFan1",
@@ -29,15 +27,19 @@ export default function Leaderboard() {
 
   const users = [user1, user2, user3, user4, user5];
   return (
-    <ul>
-      <li className="leadercard leadercard-header">
-        <h4>User</h4>
-        <h4>Record</h4>
-        <h4>Points Earned</h4>
-      </li>
+    <table>
+      <tr>
+        <th>User</th>
+        <th>Record</th>
+        <th>Points Earned</th>
+      </tr>
       {users.map((user) => (
-        <Leadercard key={user.username} user={user} />
+        <tr>
+          <td>{user.username}</td>
+          <td>{user.all_time_record}</td>
+          <td>{user.total_money_earned}</td>
+        </tr>
       ))}
-    </ul>
+    </table>
   );
 }
