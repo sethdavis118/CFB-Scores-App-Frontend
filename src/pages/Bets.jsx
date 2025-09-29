@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import useMutation from "../api/useMutation";
+import { getBets, getGames } from "../api/ApiFunctions";
 // import { RestaurantRounded } from "@mui/icons-material";
 import BetCard from "../components/BetCard";
 
@@ -13,51 +13,18 @@ export default function Bets() {
 
   // const [amount, setAmount] = useState(50);
 
+  async function setBetsFunc() {
+    const tempBets = await getBets(token);
+    setBets(tempBets);
+  }
+
   useEffect(() => {
     // Fetching all the bets from the user.
-    const getBets = async () => {
-      const response = await fetch("http://localhost:3000/bets", {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const result = await response.json();
-      setBets(result);
-    };
-    getBets();
+    setBetsFunc();
   }, []);
 
   useEffect(() => {
-    // Getting game info.
-    async function getGame(id) {
-      const response = await fetch(`http://localhost:3000/games/${id}`, {
-        method: "GET",
-        headers: {
-          accept: "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const result = await response.json();
-      if (!response.ok) throw Error(result?.message ?? "Something went wrong.");
-      return result;
-    }
-
-    async function getGames() {
-      // Getting the game data for the bet-on games.
-      if (!bets) {
-        console.log("Bets is empty!");
-        return;
-      } else {
-        let tempArray = [];
-        for (const bet of bets) {
-          const gameData = await getGame(bet.game_id);
-          const game = gameData.rows[0];
-          tempArray.push(game);
-        }
-        setBetGames(tempArray);
-      }
-    }
-
-    getGames();
+    getGames(bets, setBetGames, token);
   }, [bets]);
 
   return (

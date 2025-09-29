@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 export default function Scores() {
   const [liveGames, setLiveGames] = useState();
   const [user, setUser] = useState();
+  const date = new Date();
+  const dayOfWeek = date.getDay();
   useEffect(() => {
     async function fetchLiveGames() {
       const response = await fetch(
@@ -54,10 +56,15 @@ export default function Scores() {
 
   // console.log(liveGames);
 
-  console.log(user);
   return (
     <>
       <h1 className="scores-header">Scores</h1>
+      {dayOfWeek === 0 ||
+        (dayOfWeek === 1 && (
+          <h3 className="scores-header">
+            Next week's games will be available Tuesday!
+          </h3>
+        ))}
       <ul>
         {liveGames?.map((game) => (
           <Scorecard game={game} key={game.id} />

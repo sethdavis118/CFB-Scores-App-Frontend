@@ -356,7 +356,7 @@ td {
 }
 
 .bet-items {
-  background-color: #d3d3d357;
+  background-color: whitesmoke;
   padding: 25px;
   margin-top: -1px;
   /* border-radius: 12px; */
@@ -374,8 +374,29 @@ td {
   margin: 0;
 }
 
+.bet-items-game-info {
+  display: flex;
+  justify-content: flex-start;
+  gap: 8px;
+}
+
 .betcard-logo {
-  width: 85px;
+  object-fit: contain;
+  max-width: 2.6rem;
+  height: auto;
+}
+
+.bet-delete-btn {
+  display: flex;
+  justify-self: flex-end;
+  background-color: inherit;
+  border: none;
+}
+
+.bet-delete-btn:hover {
+  color: red;
+  background-color: inherit;
+  border: none;
 }
 
 /* Account Page */
