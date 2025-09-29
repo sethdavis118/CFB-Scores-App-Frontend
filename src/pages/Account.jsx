@@ -44,17 +44,19 @@ export default function Account() {
   
   if (!user) {
     return (
-      <div>
-        <h1>Account</h1>
-        <p>You are not logged in.</p>
+    <div className="account-page not-logged-in">
+      <h1>Account</h1>
+      <p>You are not logged in.</p>
+      <div className="account-buttons">
         <button onClick={() => navigate("/register")}>Register</button>
         <button onClick={() => navigate("/login")}>Login</button>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   return (
-    <div>
+    <div className= "account-page">
       <h1>Account Page</h1>
       <p>Username: {user.username}</p>
       <p>Email: {user.email}</p>
