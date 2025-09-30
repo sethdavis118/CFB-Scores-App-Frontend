@@ -196,11 +196,82 @@ export async function placeBet(
         betSpread,
       }), //What belongs in here?
     });
+    const creditsRes = await fetch(`http://localhost:3000/credits/use`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        amount,
+      }),
+    });
 
     if (!res.ok) {
       const data = await res.json();
       console.error(data.error);
       setError("Placing bet failed"); // Use if this exists to check which alert to show, success or failure.
+      return;
+    }
+
+    const data = await res.json();
+    const creditsData = await creditsRes.json();
+    return data, creditsData;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function fetchLiveGames(setLiveGames) {
+  const response = await fetch(
+    "https://api.collegefootballdata.com/scoreboard?classification=fbs",
+    {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${import.meta.env.VITE_SCOREBOARD_BEARER_TOKEN}`,
+      },
+    }
+  );
+  // console.log(response);
+  const isJson = /json/.test(response.headers.get("Content-Type"));
+  const result = isJson ? await response.json() : undefined;
+  if (!response.ok) throw Error(result?.message ?? "Something went wrong.");
+  // console.log(result);
+  setLiveGames(result);
+  return result;
+}
+
+export async function fetchUser(setUser) {
+  const token = localStorage.getItem("token");
+  try {
+    const res = await fetch("http://localhost:3000/users/me", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) throw new Error("Failed to fetch user");
+    const data = await res.json();
+    setUser(data);
+  } catch (err) {
+    console.error("Error loading account:", err);
+  }
+}
+
+export async function updateUserScore(amount_won) {
+  const token = localStorage.getItem("token");
+  try {
+    const res = await fetch(`http://localhost:3000/leaderboard/update/`, {
+      //Fix the route later
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ amount_won }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      console.error(data.error);
       return;
     }
 
