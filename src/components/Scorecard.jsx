@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import useQuery from "../api/useQuery";
+import { placeBet } from "../api/ApiFunctions";
 import Alert from "@mui/material/Alert";
 import CancelIcon from "@mui/icons-material/Cancel";
 
 export default function Scorecard({ game }) {
-  console.log(game);
   // console.log(game.home_team_id, game.away_team_id);
   const { data: home_team_data } = useQuery(
     `/teams/team_id/${game.homeTeam.id}`
@@ -34,6 +34,7 @@ export default function Scorecard({ game }) {
   const [awayTeamPoints, setAwayTeamPoints] = useState();
   const [status, setStatus] = useState();
   const [period, setPeriod] = useState();
+  const [quarterStr, setQuarterStr] = useState();
   const [clock, setClock] = useState();
 
   const [showPopup, setShowPopup] = useState(false);
@@ -63,16 +64,25 @@ export default function Scorecard({ game }) {
       setAwayLogo(away_team_data.logos[0]);
       if (game.betting.spread < 0) {
         setSpread(game.betting.spread);
-        setFavoredTeam(home_team_data.abbreviation);
+        setFavoredTeam(home_team_data);
       } else if (game.betting.spread > 0) {
         setSpread(-game.betting.spread);
-        setFavoredTeam(away_team_data.abbreviation);
+        setFavoredTeam(away_team_data);
       }
 
       setHomeTeamPoints(game.homeTeam.points);
       setAwayTeamPoints(game.awayTeam.points);
       setStatus(game.status);
       setPeriod(game.period);
+      if (game.period === 1) {
+        setQuarterStr("1st");
+      } else if (game.period === 2) {
+        setQuarterStr("2nd");
+      } else if (game.period === 3) {
+        setQuarterStr("3rd");
+      } else if (game.period === 4) {
+        setQuarterStr("4th");
+      }
       setClock(game.clock);
 
       setAppears(true);
@@ -81,42 +91,13 @@ export default function Scorecard({ game }) {
 
   function showBetInformation(selectedTeam) {
     // console.log(selectedTeam);
-    if (favoredTeam === selectedTeam.abbreviation) {
+    if (favoredTeam.id === selectedTeam.id) {
       setBetInfo(`Bet ${selectedTeam.school} at ${spread}`);
       setBetSpread(spread);
-    } else if (favoredTeam !== selectedTeam.abbreviation) {
+    } else if (favoredTeam.id !== selectedTeam.id) {
       const underdogSpread = Math.abs(spread);
       setBetInfo(`Bet ${selectedTeam.school} at +${underdogSpread}`);
       setBetSpread(underdogSpread);
-    }
-  }
-
-  async function placeBet() {
-    const teamId = betTeam.id;
-    console.log(gameId);
-    try {
-      const res = await fetch("http://localhost:3000/bets/place_bet", {
-        //Fix the route later
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ gameId, teamId, amount, betSpread }), //What belongs in here?
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        console.error(data.error);
-        setError("Placing bet failed"); // Use if this exists to check which alert to show, success or failure.
-        return;
-      }
-
-      const data = await res.json();
-      console.log(data);
-      return data;
-    } catch (error) {
-      console.error(error);
     }
   }
 
@@ -136,19 +117,6 @@ export default function Scorecard({ game }) {
     }
   }
 
-  // let quarterStr;
-  // if (quarter === 1) {
-  //   quarterStr = "1st";
-  // } else if (quarter === 2) {
-  //   quarterStr = "2nd";
-  // } else if (quarter === 3) {
-  //   quarterStr = "3rd";
-  // } else if (quarter === 4) {
-  //   quarterStr = "4th";
-  // } else if (completed) {
-  //   quarterStr = "Final";
-  // }
-
   return (
     <div>
       {appears && (
@@ -163,19 +131,19 @@ export default function Scorecard({ game }) {
                 />
                 <h4 style={{ color: awayColor }}>{awayName}</h4>
               </div>
-              {status === "in_progress" ||
-                (status === "completed" && <h3>{awayTeamPoints}</h3>)}
+              {status === "in_progress" && <h3>{awayTeamPoints}</h3>}
+              {status === "completed" && <h3>{awayTeamPoints}</h3>}
             </div>
             <div className="scorecard-details">
               {/* <p>Time goes here</p> */}
               {status === "in_progress" && (
                 <p>
-                  {period} {clock}
+                  {quarterStr} {clock}
                 </p>
               )}
               {status === "completed" && <p>Final</p>}
               <h5>
-                {favoredTeam} {spread}
+                {favoredTeam.abbreviation} {spread}
               </h5>
             </div>
             <div className="scorecard-home-points-data">
@@ -187,14 +155,13 @@ export default function Scorecard({ game }) {
                 />
                 <h4 style={{ color: homeColor }}>{homeName}</h4>
               </div>
-              {status === "in_progress" ||
-                (status === "completed" && <h3>{homeTeamPoints}</h3>)}
+              {status === "in_progress" && <h3>{homeTeamPoints}</h3>}
+              {status === "completed" && <h3>{homeTeamPoints}</h3>}
             </div>
           </div>
           <div className="scorecard-interaction">
             {status === "completed" || status === "in_progress" || (
               <button
-                // The placeBet onClick doesn't work yet.
                 onClick={() => {
                   setShowPopup(!showPopup);
                   setBetTeam(away_team_data);
@@ -209,7 +176,6 @@ export default function Scorecard({ game }) {
             )}
             {status === "completed" || status === "in_progress" || (
               <button
-                // The placeBet onClick doesn't work yet.
                 onClick={() => {
                   setShowPopup(!showPopup);
                   setBetTeam(home_team_data);
@@ -254,8 +220,15 @@ export default function Scorecard({ game }) {
                 </button>
                 <button
                   onClick={() => {
-                    console.log(betSpread);
-                    placeBet();
+                    placeBet(
+                      betTeam,
+                      favoredTeam,
+                      gameId,
+                      amount,
+                      betSpread,
+                      setError,
+                      token
+                    );
                     // Add actual logic and make sure the bet was successful before showing the alert.
                     displayAlert(true);
                   }}

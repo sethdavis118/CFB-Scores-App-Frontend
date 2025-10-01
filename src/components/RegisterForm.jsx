@@ -77,7 +77,7 @@ export default function RegisterForm() {
   if (teamsError || confError) return <p>Error loading data</p>;
 
   return (
-    <div>
+    <div className="register-form">
       <h2>Create Account</h2>
       {error && <p>{error}</p>}
       <form onSubmit={handleRegister}>

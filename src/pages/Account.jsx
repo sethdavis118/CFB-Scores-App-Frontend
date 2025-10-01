@@ -51,6 +51,7 @@ if (creditsRes.ok) {
 }
 }
 
+
 const { data: team } = useQuery(
 user?.favorite_team ? `/teams/${user.favorite_team}` : null
 );
@@ -60,6 +61,7 @@ localStorage.removeItem("token");
 setUser(null);
 navigate("/login");
 };
+
 
 if (loading) return <p>Loading...</p>;
 
