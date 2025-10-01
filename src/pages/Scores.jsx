@@ -10,7 +10,7 @@ export default function Scores() {
 
   const getFavoriteGame = () => {
     if (user) {
-      const favoriteGame = liveGames.find(
+      const favoriteGame = liveGames?.find(
         (game) =>
           game.awayTeam.id === user.favorite_team ||
           game.homeTeam.id === user.favorite_team
@@ -21,8 +21,6 @@ export default function Scores() {
   };
 
   const sortFunction = (a, b) => {
-    getFavoriteGame;
-    // Does this completed logic work?
     if (a.status !== "completed") {
       if (a.startDate > b.startDate) {
         return 1;
@@ -36,21 +34,19 @@ export default function Scores() {
       return -1;
     }
   };
+
   useEffect(() => {
     fetchLiveGames(setLiveGames);
     fetchUser(setUser);
   }, []);
 
-  liveGames?.sort(sortFunction);
-
-  // const { data: games, loading, error } = useQuery("/games");
-  // To show past games, use the above query and map "games" instead of futureGames.
-  // const { data: game } = useQuery("/games/1");
-  // const { data: futureGames } = useQuery("/upcoming");
-  // if (loading || !liveGames) return <p>Loading...</p>;
-  // if (error) return <p>Sorry! {error}</p>;
-
-  // console.log(liveGames);
+  const favoriteGame = getFavoriteGame();
+  const gamesList = liveGames?.filter(
+    (game) =>
+      game.awayTeam.id !== user.favorite_team &&
+      game.homeTeam.id !== user.favorite_team
+  );
+  gamesList?.sort(sortFunction);
 
   return (
     <>
@@ -62,8 +58,14 @@ export default function Scores() {
           </h3>
         ))}
       <ul>
-        {/* {user?.favorite_team} */}
-        {liveGames?.map((game) => (
+        <div className="favorite-game">
+          {favoriteGame && <Scorecard game={favoriteGame}></Scorecard>}
+          {/* An error message might be good, but I'm leaving it out for now because it shows in the background every time it's loading. */}
+          {/* {!favoriteGame && (
+            <h4>Your favorite team isn't playing this week!</h4>
+          )} */}
+        </div>
+        {gamesList?.map((game) => (
           <Scorecard game={game} key={game.id} />
         ))}
       </ul>

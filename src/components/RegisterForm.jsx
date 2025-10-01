@@ -30,7 +30,9 @@ export default function RegisterForm() {
 
     let validTeam = null;
     if (favoriteTeam) {
-      const teamExists = teams.find((t) => t.id === parseInt(favoriteTeam));
+      const teamExists = teams.find(
+        (t) => t.team_id === parseInt(favoriteTeam)
+      );
       if (!teamExists) {
         setError("Selected team is not valid");
         return;
@@ -108,8 +110,8 @@ export default function RegisterForm() {
           >
             <option value="">--Select a team--</option>
             {teams.map((team) => (
-              <option key={team.id} value={team.id}>
-                {team.school} ({team.mascot})
+              <option key={team.id} value={team.team_id}>
+                {team.school} {team.mascot}
               </option>
             ))}
           </select>
