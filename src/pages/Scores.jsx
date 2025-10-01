@@ -1,51 +1,47 @@
 import Scorecard from "../components/Scorecard";
 import { useState, useEffect } from "react";
-// import useQuery from "../api/useQuery";
+import { fetchLiveGames, fetchUser } from "../api/ApiFunctions";
 
 export default function Scores() {
   const [liveGames, setLiveGames] = useState();
   const [user, setUser] = useState();
   const date = new Date();
   const dayOfWeek = date.getDay();
-  useEffect(() => {
-    async function fetchLiveGames() {
-      const response = await fetch(
-        "https://api.collegefootballdata.com/scoreboard?classification=fbs",
-        {
-          method: "GET",
-          headers: {
-            accept: "application/json",
-            Authorization: `Bearer ${
-              import.meta.env.VITE_SCOREBOARD_BEARER_TOKEN
-            }`,
-          },
-        }
-      );
-      // console.log(response);
-      const isJson = /json/.test(response.headers.get("Content-Type"));
-      const result = isJson ? await response.json() : undefined;
-      if (!response.ok) throw Error(result?.message ?? "Something went wrong.");
-      // console.log(result);
-      setLiveGames(result);
-      return result;
-    }
-    // async function fetchUser() {
-    //   const token = localStorage.getItem("token");
-    //   try {
-    //     const res = await fetch("http://localhost:3000/users/me", {
-    //       headers: { Authorization: `Bearer ${token}` },
-    //     });
-    //     if (!res.ok) throw new Error("Failed to fetch user");
-    //     const data = await res.json();
-    //     setUser(data);
-    //   } catch (err) {
-    //     console.error("Error loading account:", err);
-    //   }
-    // }
 
-    fetchLiveGames();
-    // fetchUser();
+  const getFavoriteGame = () => {
+    if (user) {
+      const favoriteGame = liveGames.find(
+        (game) =>
+          game.awayTeam.id === user.favorite_team ||
+          game.homeTeam.id === user.favorite_team
+      );
+      console.log(favoriteGame);
+      return favoriteGame;
+    }
+  };
+
+  const sortFunction = (a, b) => {
+    getFavoriteGame;
+    // Does this completed logic work?
+    if (a.status !== "completed") {
+      if (a.startDate > b.startDate) {
+        return 1;
+      }
+      if (b.startDate > a.startDate) {
+        return -1;
+      } else {
+        return 0;
+      }
+    } else {
+      return -1;
+    }
+  };
+  useEffect(() => {
+    fetchLiveGames(setLiveGames);
+    fetchUser(setUser);
   }, []);
+
+  liveGames?.sort(sortFunction);
 
   // const { data: games, loading, error } = useQuery("/games");
   // To show past games, use the above query and map "games" instead of futureGames.
@@ -66,6 +62,7 @@ export default function Scores() {
           </h3>
         ))}
       <ul>
+        {/* {user?.favorite_team} */}
         {liveGames?.map((game) => (
           <Scorecard game={game} key={game.id} />
         ))}

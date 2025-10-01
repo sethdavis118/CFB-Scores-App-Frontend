@@ -4,10 +4,12 @@ import {
   editBetWinStatus,
   checkIsCompleted,
   deleteBet,
+  updateUserScore,
 } from "../api/ApiFunctions";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
-export default function BetCard({ bet, betGame, token }) {
+export default function BetCard({ bet, betGame, token, setBets }) {
+  console.log(bet.amount);
   const [awayTeam, setAwayTeam] = useState();
   const [homeTeam, setHomeTeam] = useState();
   const [betTeam, setBetTeam] = useState();
@@ -27,6 +29,11 @@ export default function BetCard({ bet, betGame, token }) {
   async function setHomeTeamFunc() {
     const tempHomeTeam = await getTeam(betGame?.home_team_id, token);
     setHomeTeam(tempHomeTeam);
+  }
+
+  async function deleteBetsFunc() {
+    await deleteBet(bet.id, token, bet.amount);
+    setBets();
   }
   // I think I did this logic right. Test it a lot to be sure.
   function decideWinStatus() {
@@ -101,8 +108,20 @@ export default function BetCard({ bet, betGame, token }) {
         }
       }
 
-      if (winStatus) {
+      if (winStatus === true) {
         editBetWinStatus(bet?.game_id, token, winStatus);
+        const sendAmount = bet?.amount;
+        // This function will need to be tested;
+        updateUserScore(sendAmount);
+      }
+      if (winStatus === false) {
+        const sendAmount = -bet?.amount;
+        updateUserScore(sendAmount);
+      }
+      if (winStatus === null && betGame?.completed === true) {
+        const sendAmount = 0;
+        updateUserScore(sendAmount);
+        console.log("The game pushed");
       }
     }
   }
@@ -113,11 +132,11 @@ export default function BetCard({ bet, betGame, token }) {
   }, []);
 
   useEffect(() => {
-    if (awayTeam?.id && bet.team_id) {
-      if (bet.team_id === awayTeam?.id) {
+    if (awayTeam?.team_id && bet.team_id) {
+      if (bet.team_id === awayTeam?.team_id) {
         setBetTeam(awayTeam);
         setHomeTeamBet(false);
-      } else if (bet.team_id === homeTeam?.id) {
+      } else if (bet.team_id === homeTeam?.team_id) {
         setBetTeam(homeTeam);
         setHomeTeamBet(true);
       }
@@ -170,7 +189,9 @@ export default function BetCard({ bet, betGame, token }) {
             {awayTeam.school} vs {homeTeam.school}
           </h6>
           <button
-            onClick={() => deleteBet(bet.id, token)}
+            onClick={() => {
+              deleteBetsFunc();
+            }}
             className="bet-delete-btn"
           >
             <DeleteOutlineIcon></DeleteOutlineIcon>

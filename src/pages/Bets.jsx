@@ -15,6 +15,7 @@ export default function Bets() {
 
   async function setBetsFunc() {
     const tempBets = await getBets(token);
+    console.log(tempBets);
     setBets(tempBets);
   }
 
@@ -29,27 +30,26 @@ export default function Bets() {
 
   return (
     <>
-      {betGames.length !== 0 && (
-        <div>
-          <h1>My Bets</h1>
-          <div className="bets-section">
-            {bets.length === 0 ? (
-              <p>No Bets Placed!</p>
-            ) : (
-              <ul className="bets-list">
-                {bets.map((bet, index) => (
-                  <BetCard
-                    key={bet.id}
-                    bet={bet}
-                    betGame={betGames[index]}
-                    token={token}
-                  ></BetCard>
-                ))}
-              </ul>
-            )}
-          </div>
+      <div>
+        <h1>My Bets</h1>
+        <div className="bets-section">
+          {bets.length !== 0 && betGames.length !== 0 ? (
+            <ul className="bets-list">
+              {bets.map((bet, index) => (
+                <BetCard
+                  key={bet.id}
+                  bet={bet}
+                  betGame={betGames[index]}
+                  token={token}
+                  setBets={setBetsFunc}
+                ></BetCard>
+              ))}
+            </ul>
+          ) : (
+            <p>No Bets Placed!</p>
+          )}
         </div>
-      )}
+      </div>
     </>
   );
 }

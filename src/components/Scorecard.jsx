@@ -5,7 +5,7 @@ import Alert from "@mui/material/Alert";
 import CancelIcon from "@mui/icons-material/Cancel";
 
 export default function Scorecard({ game }) {
-  // console.log(game.home_team_id, game.away_team_id);
+  // console.log(game);
   const { data: home_team_data } = useQuery(
     `/teams/team_id/${game.homeTeam.id}`
   );
