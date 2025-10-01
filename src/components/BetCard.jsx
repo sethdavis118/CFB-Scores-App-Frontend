@@ -8,7 +8,7 @@ import {
 } from "../api/ApiFunctions";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
-export default function BetCard({ bet, betGame, token }) {
+export default function BetCard({ bet, betGame, token, setBets }) {
   console.log(bet.amount);
   const [awayTeam, setAwayTeam] = useState();
   const [homeTeam, setHomeTeam] = useState();
@@ -29,6 +29,11 @@ export default function BetCard({ bet, betGame, token }) {
   async function setHomeTeamFunc() {
     const tempHomeTeam = await getTeam(betGame?.home_team_id, token);
     setHomeTeam(tempHomeTeam);
+  }
+
+  async function deleteBetsFunc() {
+    await deleteBet(bet.id, token, bet.amount);
+    setBets();
   }
   // I think I did this logic right. Test it a lot to be sure.
   function decideWinStatus() {
@@ -185,7 +190,7 @@ export default function BetCard({ bet, betGame, token }) {
           </h6>
           <button
             onClick={() => {
-              deleteBet(bet.id, token);
+              deleteBetsFunc();
             }}
             className="bet-delete-btn"
           >

@@ -15,6 +15,7 @@ export default function Bets() {
 
   async function setBetsFunc() {
     const tempBets = await getBets(token);
+    console.log(tempBets);
     setBets(tempBets);
   }
 
@@ -40,6 +41,7 @@ export default function Bets() {
                   bet={bet}
                   betGame={betGames[index]}
                   token={token}
+                  setBets={setBetsFunc}
                 ></BetCard>
               ))}
             </ul>

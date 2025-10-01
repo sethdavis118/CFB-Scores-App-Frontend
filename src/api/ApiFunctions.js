@@ -118,7 +118,18 @@ export async function updateIsCompletedStatus(
   }
 }
 
-export async function deleteBet(id, token) {
+export async function deleteBet(id, token, amount) {
+  // const bet = await fetch(`http://localhost:3000/bets/delete/${id}`, {
+  //   method: "GET",
+  //   headers: {
+  //     accept: "application/json",
+  //   },
+  // });
+  // const betResult = await bet.json();
+  // console.log(betResult);
+  // if (!bet.ok) throw Error(result?.message ?? "Something went wrong.");
+  // const amount = betResult.amount;
+  console.log(amount);
   const response = await fetch(`http://localhost:3000/bets/delete/${id}`, {
     method: "DELETE",
     headers: {
@@ -128,7 +139,18 @@ export async function deleteBet(id, token) {
   });
   const result = await response.json();
   if (!response.ok) throw Error(result?.message ?? "Something went wrong.");
-  return result;
+  const creditsRes = await fetch(`http://localhost:3000/credits/return`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      amount,
+    }),
+  });
+  const creditsData = await creditsRes.json();
+  return result, creditsData;
 }
 
 export const getBets = async (token) => {
@@ -196,6 +218,13 @@ export async function placeBet(
         betSpread,
       }), //What belongs in here?
     });
+    if (!res.ok) {
+      const data = await res.json();
+      console.error(data.error);
+      setError("Placing bet failed"); // Use if this exists to check which alert to show, success or failure.
+      return;
+    }
+
     const creditsRes = await fetch(`http://localhost:3000/credits/use`, {
       method: "PUT",
       headers: {
@@ -206,14 +235,6 @@ export async function placeBet(
         amount,
       }),
     });
-
-    if (!res.ok) {
-      const data = await res.json();
-      console.error(data.error);
-      setError("Placing bet failed"); // Use if this exists to check which alert to show, success or failure.
-      return;
-    }
-
     const data = await res.json();
     const creditsData = await creditsRes.json();
     return data, creditsData;
