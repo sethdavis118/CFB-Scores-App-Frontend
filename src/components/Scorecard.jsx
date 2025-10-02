@@ -169,9 +169,10 @@ export default function Scorecard({ game, user }) {
           </div>
           <div className="scorecard-interaction">
             {/* the button is visible if all conditions are met, and go away once any condition changes */}
-            {status !== "completed" &&
-              status !== "in_progress" &&
-              !hasPlacedBet && (
+            {status === "completed" ||
+              status === "in_progress" ||
+              hasPlacedBet ||
+              !user || (
                 <button
                   onClick={() => {
                     setShowPopup(!showPopup);
@@ -185,9 +186,10 @@ export default function Scorecard({ game, user }) {
                   Bet {awayAbbreviation}
                 </button>
               )}
-            {status !== "completed" &&
-              status !== "in_progress" &&
-              !hasPlacedBet && (
+            {status === "completed" ||
+              status === "in_progress" ||
+              hasPlacedBet ||
+              !user || (
                 <button
                   onClick={() => {
                     setShowPopup(!showPopup);
@@ -201,7 +203,6 @@ export default function Scorecard({ game, user }) {
                   Bet {homeAbbreviation}
                 </button>
               )}
-
           </div>
           {!user && <p>Log in to place a bet!</p>}
           {showPopup && (
