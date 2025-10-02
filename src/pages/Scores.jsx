@@ -1,8 +1,10 @@
 import Scorecard from "../components/Scorecard";
 import { useState, useEffect } from "react";
-import { fetchLiveGames, fetchUser } from "../api/ApiFunctions";
+import { apiFetch } from "../api/client.js";
+import { fetchLiveGames, fetchUser } from "../api/ApiFunctions.js";
 
 export default function Scores() {
+  const [games, setGames] = useState([]);
   const [liveGames, setLiveGames] = useState();
   const [user, setUser] = useState();
   const date = new Date();
@@ -36,8 +38,16 @@ export default function Scores() {
   };
 
   useEffect(() => {
-    fetchLiveGames(setLiveGames);
-    fetchUser(setUser);
+    async function fetchGames() {
+      try {
+        const result = await apiFetch("/scoreboard?classification=fbs");
+        setGames(result);
+      } catch (err) {
+        console.error("Error fetching games:", err);
+      }
+    }
+
+    fetchGames();
   }, []);
 
   const favoriteGame = getFavoriteGame();
@@ -50,25 +60,20 @@ export default function Scores() {
 
   return (
     <>
-      <h1 className="scores-header">Scores</h1>
-      {dayOfWeek === 0 ||
-        (dayOfWeek === 1 && (
-          <h3 className="scores-header">
-            Next week's games will be available Tuesday!
-          </h3>
-        ))}
-      <ul>
-        <div className="favorite-game">
-          {favoriteGame && <Scorecard game={favoriteGame}></Scorecard>}
-          {/* An error message might be good, but I'm leaving it out for now because it shows in the background every time it's loading. */}
-          {/* {!favoriteGame && (
-            <h4>Your favorite team isn't playing this week!</h4>
-          )} */}
-        </div>
-        {gamesList?.map((game) => (
-          <Scorecard game={game} key={game.id} />
-        ))}
-      </ul>
+      <section>
+        <h1>Scores</h1>
+        {games.length === 0 ? (
+          <p>No games available</p>
+        ) : (
+          <ul>
+            {games.map((g) => (
+              <li key={g.id}>
+                {g.home_team} vs {g.away_team} — {g.start_date}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
     </>
   );
 }

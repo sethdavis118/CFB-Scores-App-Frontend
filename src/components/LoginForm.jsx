@@ -12,7 +12,7 @@ export default function LoginForm() {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:3000/users/login", {
+      const res = await fetch("http://localhost:3000/api//users/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -34,7 +34,7 @@ export default function LoginForm() {
   };
 
   return (
-    <div className= "login-form">
+    <div className="login-form">
       <h2>Login</h2>
       {error && <p style={{ color: "red" }}>{error}</p>}
       <form onSubmit={handleLogin}>

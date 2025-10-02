@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import useQuery from "../api/useQuery";
+import { apiFetch } from "../api/client.js";
 
 export default function RegisterForm() {
   const navigate = useNavigate();
@@ -9,79 +9,44 @@ export default function RegisterForm() {
   const [password, setPassword] = useState("");
   const [favoriteTeam, setFavoriteTeam] = useState("");
   const [favoriteConf, setFavoriteConf] = useState("");
+  const [teams, setTeams] = useState("");
+  const [conferences, setConferences] = useState("");
   const [error, setError] = useState("");
 
-  // fetch teams
-  const {
-    data: teams = [],
-    loading: teamsLoading,
-    error: teamsError,
-  } = useQuery("/teams");
-  // fetch conferences
-  const {
-    data: conferences = [],
-    loading: confLoading,
-    error: confError,
-  } = useQuery("/teams/conferences");
-
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    setError("");
-
-    let validTeam = null;
-    if (favoriteTeam) {
-      const teamExists = teams.find(
-        (t) => t.team_id === parseInt(favoriteTeam)
-      );
-      if (!teamExists) {
-        setError("Selected team is not valid");
-        return;
-      }
-      validTeam = parseInt(favoriteTeam);
-    }
-
-    const payload = {
-      username,
-      email,
-      password,
-      favorite_team: validTeam,
-      favorite_conference: favoriteConf || null,
-    };
-
-    try {
-      const res = await fetch("http://localhost:3000/users/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      let data;
+  useEffect(() => {
+    async function fetchData() {
       try {
-        data = await res.json();
-      } catch {
-        setError("Server returned invalid response");
-        return;
+        const [teamsData, conferencesData] = await Promise.all([
+          apiFetch("/teams"),
+          apiFetch("/conferences"),
+        ]);
+        setTeams(teamsData);
+        setConferences(conferencesData);
+      } catch (err) {
+        console.error("Error fetching teams/conferences:", err);
       }
+    }
+    fetchData();
+  }, []);
 
-      if (!res.ok) {
-        setError(data.error || "Registration failed");
-        return;
-      }
-
+  async function handleRegister(e) {
+    e.preventDefault();
+    try {
+      const data = await apiFetch("/users/register", {
+        method: "POST",
+        body: JSON.stringify({ username, email, password }),
+      });
       localStorage.setItem("token", data.token);
       navigate("/account");
-    } catch {
-      setError("Registration failed");
+    } catch (err) {
+      setError("Registration failed: " + err.message);
     }
-  };
-
-  if (teamsLoading || confLoading) return <p>Loading...</p>;
-  if (teamsError || confError) return <p>Error loading data</p>;
+  }
 
   return (
     <div className="register-form">
       <h2>Create Account</h2>
-      {error && <p>{error}</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
       <form onSubmit={handleRegister}>
         <div>
           <label>Username:</label>
@@ -124,8 +89,8 @@ export default function RegisterForm() {
           >
             <option value="">--Select a conference--</option>
             {conferences.map((conf, index) => (
-              <option key={index} value={conf}>
-                {conf}
+              <option key={index} value={conf.name || conf}>
+                {conf.name || conf}
               </option>
             ))}
           </select>

@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import useQuery from "../api/useQuery";
+import { apiFetch } from "../src/api/client.js";
 
-export default function Account() {
+export default function EditUser() {
   const [user, setUser] = useState();
   const [loading, setLoading] = useState(true);
   const [credits, setCredits] = useState(null);
@@ -11,22 +12,13 @@ export default function Account() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setLoading(false);
-      return;
-    }
     async function fetchUser() {
       try {
-        const res = await fetch("http://localhost:3000/api/users/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!res.ok) throw new Error("Failed to fetch user");
-        const data = await res.json();
+        setLoading(true);
+        const data = await apiFetch("/api/users");
         setUser(data);
-        await fetchCredits(data.id, token);
       } catch (err) {
-        console.error("Error loading account:", err);
+        console.error("Failed to load bets:", err);
       } finally {
         setLoading(false);
       }
@@ -34,20 +26,11 @@ export default function Account() {
     fetchUser();
   }, []);
 
-  async function fetchCredits(userId, token) {
+  async function fetchCredits(userId) {
     try {
       setRefreshing(true);
-      const creditsRes = await fetch(
-        `http://localhost:3000/api/credits/${userId}/raw`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      if (creditsRes.ok) {
-        const creditsData = await creditsRes.json();
-        setCredits(creditsData.credits);
-      }
+      const creditsData = await apiFetch(`/credits/${userId}/raw`);
+      setCredits(creditsData.credits);
     } catch (err) {
       console.error("Error fetching credits:", err);
     } finally {
@@ -62,35 +45,24 @@ export default function Account() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     setUser(null);
-    navigate("/login");
+    navigate("/api/login");
   };
 
   async function handleUpdate(e) {
     e.preventDefault();
-    const token = localStorage.getItem("token");
     try {
-      const response = await fetch("http://localhost:3000/api/users/me", {
+      const data = await apiFetch("/users/me", {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
         body: JSON.stringify({
           favorite_team: user.favorite_team,
           favorite_conference: user.favorite_conference,
         }),
       });
-
-      const data = await response.json();
-      if (response.ok) {
-        setUser(data);
-        setMessage("User updated successfully");
-      } else {
-        setMessage(data.error || "Failed to update user");
-      }
+      setUser(data);
+      setMessage("User updated successfully");
     } catch (err) {
       console.error("Error updating user:", err);
-      setMessage("Network error while updating user");
+      setMessage(err.message || "Failed to update user");
     }
   }
 
@@ -155,7 +127,7 @@ export default function Account() {
       {message && <p>{message}</p>}
 
       <button
-        onClick={() => fetchCredits(user.id, localStorage.getItem("token"))}
+        onClick={() => fetchCredits(user.id)}
         disabled={refreshing}
         className="sports-btn"
       >

@@ -16,7 +16,7 @@ export async function editBetWinStatus(id, token, winStatus) {
   console.log("Editing win status");
   console.log(winStatus);
   try {
-    const res = await fetch(`http://localhost:3000/bets/update/${id}`, {
+    const res = await fetch(`http://localhost:3000/api//bets/update/${id}`, {
       //Fix the route later
       method: "PUT",
       headers: {
@@ -95,7 +95,7 @@ export async function updateIsCompletedStatus(
   homePoints
 ) {
   try {
-    const res = await fetch(`http://localhost:3000/games/update/${id}`, {
+    const res = await fetch(`http://localhost:3000/api//games/update/${id}`, {
       //Fix the route later
       method: "PUT",
       headers: {
@@ -119,7 +119,7 @@ export async function updateIsCompletedStatus(
 }
 
 export async function deleteBet(id, token, amount) {
-  // const bet = await fetch(`http://localhost:3000/bets/delete/${id}`, {
+  // const bet = await fetch(`http://localhost:3000/api/bets/delete/${id}`, {
   //   method: "GET",
   //   headers: {
   //     accept: "application/json",
@@ -203,7 +203,7 @@ export async function placeBet(
   const teamId = betTeam.team_id;
   const favoredTeamId = favoredTeam.team_id;
   try {
-    const res = await fetch("http://localhost:3000/bets/place_bet", {
+    const res = await fetch("http://localhost:3000/api/bets/place_bet", {
       //Fix the route later
       method: "POST",
       headers: {
@@ -244,21 +244,11 @@ export async function placeBet(
 }
 
 export async function fetchLiveGames(setLiveGames) {
-  const response = await fetch(
-    "https://api.collegefootballdata.com/scoreboard?classification=fbs",
-    {
-      method: "GET",
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${import.meta.env.VITE_SCOREBOARD_BEARER_TOKEN}`,
-      },
-    }
-  );
-  // console.log(response);
-  const isJson = /json/.test(response.headers.get("Content-Type"));
-  const result = isJson ? await response.json() : undefined;
-  if (!response.ok) throw Error(result?.message ?? "Something went wrong.");
-  // console.log(result);
+  const response = await fetch("http://localhost:3000/api/scoreboard");
+  console.log(`fetchLiveGames response: ${response.json}`);
+  if (!response.ok) throw Error("Failed to fetch scoreboard");
+
+  const result = await response.json();
   setLiveGames(result);
   return result;
 }
@@ -266,7 +256,7 @@ export async function fetchLiveGames(setLiveGames) {
 export async function fetchUser(setUser) {
   const token = localStorage.getItem("token");
   try {
-    const res = await fetch("http://localhost:3000/users/me", {
+    const res = await fetch("http://localhost:3000/api/users/me", {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (!res.ok) throw new Error("Failed to fetch user");
@@ -280,7 +270,7 @@ export async function fetchUser(setUser) {
 export async function updateUserScore(amount_won) {
   const token = localStorage.getItem("token");
   try {
-    const res = await fetch(`http://localhost:3000/leaderboard/update/`, {
+    const res = await fetch(`http://localhost:3000/api/leaderboard/update/`, {
       //Fix the route later
       method: "PUT",
       headers: {

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { getBets, getGames } from "../api/ApiFunctions";
+import { apiFetch } from "../api/client.js";
+import { getBets } from "../api/ApiFunctions";
 // import { RestaurantRounded } from "@mui/icons-material";
 import BetCard from "../components/BetCard";
 
@@ -7,7 +8,7 @@ export default function Bets() {
   //   // A bet should contain:
   //   // Team wagered on, spread, amount
   //   // Game data (opponent, score, time remaining, etc.)
-  const [betGames, setBetGames] = useState([]); // The game data for each bet, fetched from the gameId.
+  const [betGames] = useState([]); // The game data for each bet, fetched from the gameId.
   const [bets, setBets] = useState([]); // The bet data itself, including amount wagered and userId.
   const [token] = useState(localStorage.getItem("token") || null);
 
@@ -20,19 +21,22 @@ export default function Bets() {
   }
 
   useEffect(() => {
-    // Fetching all the bets from the user.
-    setBetsFunc();
+    async function loadBets() {
+      try {
+        const data = await apiFetch("/bets"); // automatically adds token + base URL
+        setBets(data);
+      } catch (err) {
+        console.error("Failed to load bets:", err);
+      }
+    }
+    loadBets();
   }, []);
-
-  useEffect(() => {
-    getGames(bets, setBetGames, token);
-  }, [bets]);
 
   return (
     <>
-      <div>
+      <section>
         <h1>My Bets</h1>
-        <div className="bets-section">
+        <section className="bets-section">
           {bets.length !== 0 && betGames.length !== 0 ? (
             <ul className="bets-list">
               {bets.map((bet, index) => (
@@ -48,8 +52,8 @@ export default function Bets() {
           ) : (
             <p>No Bets Placed!</p>
           )}
-        </div>
-      </div>
+        </section>
+      </section>
     </>
   );
 }
