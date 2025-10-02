@@ -265,6 +265,9 @@ export async function fetchLiveGames(setLiveGames) {
 
 export async function fetchUser(setUser) {
   const token = localStorage.getItem("token");
+  if (!token) {
+    return;
+  }
   try {
     const res = await fetch("http://localhost:3000/users/me", {
       headers: { Authorization: `Bearer ${token}` },

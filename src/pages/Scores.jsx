@@ -43,8 +43,8 @@ export default function Scores() {
   const favoriteGame = getFavoriteGame();
   const gamesList = liveGames?.filter(
     (game) =>
-      game.awayTeam.id !== user.favorite_team &&
-      game.homeTeam.id !== user.favorite_team
+      game.awayTeam.id !== user?.favorite_team &&
+      game.homeTeam.id !== user?.favorite_team
   );
   gamesList?.sort(sortFunction);
 
