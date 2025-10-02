@@ -112,12 +112,12 @@ export default function Scorecard({ game, user }) {
   function displayAlert(isSuccess) {
     if (isSuccess) {
       setShowSuccessAlert(true);
+      setShowPopup(false);
       setTimeout(() => {
         setShowSuccessAlert(false);
-        setShowPopup(false);
       }, 4000);
       //closes popup once bet is placed
-      updateHasPlacedBet(true);
+      updateHasPlacedBet(betTeam.school);
     } else {
       setShowPopup(false);
       setShowCanceledAlert(true);
@@ -173,7 +173,7 @@ export default function Scorecard({ game, user }) {
             {/* the button is visible if all conditions are met, and go away once any condition changes */}
             {status === "completed" ||
               status === "in_progress" ||
-              hasPlacedBet ||
+              typeof hasPlacedBet === "string" ||
               !user || (
                 <button
                   onClick={() => {
@@ -190,7 +190,7 @@ export default function Scorecard({ game, user }) {
               )}
             {status === "completed" ||
               status === "in_progress" ||
-              hasPlacedBet ||
+              typeof hasPlacedBet === "string" ||
               !user || (
                 <button
                   onClick={() => {
@@ -206,6 +206,7 @@ export default function Scorecard({ game, user }) {
                 </button>
               )}
           </div>
+          {hasPlacedBet && <p>You picked {hasPlacedBet}</p>}
           {!user && <p>Log in to place a bet!</p>}
           {showPopup && (
             <div className="scorecard-bet-section">
@@ -231,7 +232,7 @@ export default function Scorecard({ game, user }) {
               </label>
               <div className="scorecared-bet-buttons">
                 <button
-                  onClick={() => displayAlert(false)}
+                  onClick={() => displayAlert(true)}
                   className="scorecard-cancel-bet-btn"
                 >
                   Cancel

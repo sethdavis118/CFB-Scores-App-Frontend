@@ -33,6 +33,7 @@ export default function BetCard({ bet, betGame, token, setBets }) {
 
   async function deleteBetsFunc() {
     await deleteBet(bet.id, token, bet.amount);
+    localStorage.removeItem(`hasPlacedBet-${betGame.game_id}`);
     setBets();
   }
   // I think I did this logic right. Test it a lot to be sure.
