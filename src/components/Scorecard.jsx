@@ -45,6 +45,7 @@ export default function Scorecard({ game, user }) {
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [showCanceledAlert, setShowCanceledAlert] = useState(false);
   const [error, setError] = useState();
+  const [hasPlacedBet, setHasPlacedBet] = useState(false);
 
   useEffect(() => {
     if (
@@ -108,6 +109,13 @@ export default function Scorecard({ game, user }) {
         setShowSuccessAlert(false);
         setShowPopup(false);
       }, 4000);
+      //closes popup once bet is placed
+      setShowPopup(false);
+      setShowSuccessAlert(true);
+      setHasPlacedBet(true);
+      setTimeout(() => {
+        setShowSuccessAlert(false);
+      }, 4000);
     } else {
       setShowPopup(false);
       setShowCanceledAlert(true);
@@ -160,34 +168,40 @@ export default function Scorecard({ game, user }) {
             </div>
           </div>
           <div className="scorecard-interaction">
-            {status === "completed" || status === "in_progress" || !user || (
-              <button
-                onClick={() => {
-                  setShowPopup(!showPopup);
-                  setBetTeam(away_team_data);
-                  // console.log(favoredTeam, away_team_data.abbreviation);
-                  showBetInformation(away_team_data);
-                }}
-                className="scorecard-bet-btn"
-                style={{ background: awayColor }}
-              >
-                Bet {awayAbbreviation}
-              </button>
-            )}
-            {status === "completed" || status === "in_progress" || !user || (
-              <button
-                onClick={() => {
-                  setShowPopup(!showPopup);
-                  setBetTeam(home_team_data);
-                  // console.log(favoredTeam, home_team_data.abbreviation);
-                  showBetInformation(home_team_data);
-                }}
-                className="scorecard-bet-btn"
-                style={{ background: homeColor }}
-              >
-                Bet {homeAbbreviation}
-              </button>
-            )}
+            {/* the button is visible if all conditions are met, and go away once any condition changes */}
+            {status !== "completed" &&
+              status !== "in_progress" &&
+              !hasPlacedBet && (
+                <button
+                  onClick={() => {
+                    setShowPopup(!showPopup);
+                    setBetTeam(away_team_data);
+                    // console.log(favoredTeam, away_team_data.abbreviation);
+                    showBetInformation(away_team_data);
+                  }}
+                  className="scorecard-bet-btn"
+                  style={{ background: awayColor }}
+                >
+                  Bet {awayAbbreviation}
+                </button>
+              )}
+            {status !== "completed" &&
+              status !== "in_progress" &&
+              !hasPlacedBet && (
+                <button
+                  onClick={() => {
+                    setShowPopup(!showPopup);
+                    setBetTeam(home_team_data);
+                    // console.log(favoredTeam, home_team_data.abbreviation);
+                    showBetInformation(home_team_data);
+                  }}
+                  className="scorecard-bet-btn"
+                  style={{ background: homeColor }}
+                >
+                  Bet {homeAbbreviation}
+                </button>
+              )}
+
           </div>
           {!user && <p>Log in to place a bet!</p>}
           {showPopup && (
