@@ -45,7 +45,9 @@ export default function Scorecard({ game, user }) {
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [showCanceledAlert, setShowCanceledAlert] = useState(false);
   const [error, setError] = useState();
-  const [hasPlacedBet, setHasPlacedBet] = useState(false);
+  const [hasPlacedBet, setHasPlacedBet] = useState(
+    () => JSON.parse(localStorage.getItem(`hasPlacedBet-${game.id}`)) || false
+  );
 
   useEffect(() => {
     if (
@@ -102,6 +104,11 @@ export default function Scorecard({ game, user }) {
     }
   }
 
+  function updateHasPlacedBet(value) {
+    setHasPlacedBet(value);
+    localStorage.setItem(`hasPlacedBet-${game.id}`, JSON.stringify(value));
+  }
+
   function displayAlert(isSuccess) {
     if (isSuccess) {
       setShowSuccessAlert(true);
@@ -110,12 +117,7 @@ export default function Scorecard({ game, user }) {
         setShowPopup(false);
       }, 4000);
       //closes popup once bet is placed
-      setShowPopup(false);
-      setShowSuccessAlert(true);
-      setHasPlacedBet(true);
-      setTimeout(() => {
-        setShowSuccessAlert(false);
-      }, 4000);
+      updateHasPlacedBet(true);
     } else {
       setShowPopup(false);
       setShowCanceledAlert(true);
