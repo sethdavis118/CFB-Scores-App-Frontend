@@ -9,7 +9,7 @@ import {
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 export default function BetCard({ bet, betGame, token, setBets }) {
-  console.log(bet.amount);
+  console.log(betGame);
   const [awayTeam, setAwayTeam] = useState();
   const [homeTeam, setHomeTeam] = useState();
   const [betTeam, setBetTeam] = useState();
