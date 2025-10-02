@@ -28,6 +28,8 @@ export default function Bets() {
     getGames(bets, setBetGames, token);
   }, [bets]);
 
+  console.log(betGames);
+
   return (
     <>
       <div>
