@@ -4,7 +4,7 @@ import { placeBet } from "../api/ApiFunctions";
 import Alert from "@mui/material/Alert";
 import CancelIcon from "@mui/icons-material/Cancel";
 
-export default function Scorecard({ game }) {
+export default function Scorecard({ game, user }) {
   console.log(game);
   const { data: home_team_data } = useQuery(
     `/teams/team_id/${game.homeTeam.id}`
@@ -168,7 +168,7 @@ export default function Scorecard({ game }) {
             </div>
           </div>
           <div className="scorecard-interaction">
-            {/* in theory, the button is visible if all conditions are met, and go away once any condition changes */}
+            {/* the button is visible if all conditions are met, and go away once any condition changes */}
             {status !== "completed" &&
               status !== "in_progress" &&
               !hasPlacedBet && (
@@ -201,7 +201,9 @@ export default function Scorecard({ game }) {
                   Bet {homeAbbreviation}
                 </button>
               )}
+
           </div>
+          {!user && <p>Log in to place a bet!</p>}
           {showPopup && (
             <div className="scorecard-bet-section">
               <h2 className="scorecard-bet-heading">Your Pick:</h2>

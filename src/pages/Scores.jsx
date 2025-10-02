@@ -43,8 +43,8 @@ export default function Scores() {
   const favoriteGame = getFavoriteGame();
   const gamesList = liveGames?.filter(
     (game) =>
-      game.awayTeam.id !== user.favorite_team &&
-      game.homeTeam.id !== user.favorite_team
+      game.awayTeam.id !== user?.favorite_team &&
+      game.homeTeam.id !== user?.favorite_team
   );
   gamesList?.sort(sortFunction);
 
@@ -59,14 +59,16 @@ export default function Scores() {
         ))}
       <ul>
         <div className="favorite-game">
-          {favoriteGame && <Scorecard game={favoriteGame}></Scorecard>}
+          {favoriteGame && (
+            <Scorecard game={favoriteGame} user={user}></Scorecard>
+          )}
           {/* An error message might be good, but I'm leaving it out for now because it shows in the background every time it's loading. */}
           {/* {!favoriteGame && (
             <h4>Your favorite team isn't playing this week!</h4>
           )} */}
         </div>
         {gamesList?.map((game) => (
-          <Scorecard game={game} key={game.id} />
+          <Scorecard game={game} user={user} key={game.id} />
         ))}
       </ul>
     </>
