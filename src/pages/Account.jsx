@@ -84,8 +84,8 @@ export default function Account() {
     return (
       <div>
         {/* auto plays when going to the page */}
-        <audio ref={audioRef} src="/drumroll.mp3" autoPlay /> <h1>Account</h1>{" "}
-        <p>You are not logged in.</p>
+        {/* <audio ref={audioRef} src="/drumroll.mp3" autoPlay /> */}
+        <h1>Account</h1> <p>You are not logged in.</p>
         <button onClick={() => navigate("/register")} className="login-btn">
           {" "}
           Register{" "}
