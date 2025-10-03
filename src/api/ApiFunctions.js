@@ -1,12 +1,15 @@
 // Gets the team by its team_id, not id.
 export async function getTeam(id, token) {
-  const response = await fetch(`http://localhost:3000/teams/team_id/${id}`, {
-    method: "GET",
-    headers: {
-      accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await fetch(
+    `https://sideline-api.onrender.com/teams/team_id/${id}`,
+    {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
   const result = await response.json();
   if (!response.ok) throw Error(result?.message ?? "Something went wrong.");
   return result;
@@ -16,15 +19,18 @@ export async function editBetWinStatus(id, token, winStatus) {
   console.log("Editing win status");
   console.log(winStatus);
   try {
-    const res = await fetch(`http://localhost:3000/bets/update/${id}`, {
-      //Fix the route later
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ winStatus }), //What belongs in here?
-    });
+    const res = await fetch(
+      `https://sideline-api.onrender.com/bets/update/${id}`,
+      {
+        //Fix the route later
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ winStatus }), //What belongs in here?
+      }
+    );
 
     if (!res.ok) {
       const data = await res.json();
@@ -95,15 +101,18 @@ export async function updateIsCompletedStatus(
   homePoints
 ) {
   try {
-    const res = await fetch(`http://localhost:3000/games/update/${id}`, {
-      //Fix the route later
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ awayPoints, homePoints }),
-    });
+    const res = await fetch(
+      `https://sideline-api.onrender.com/games/update/${id}`,
+      {
+        //Fix the route later
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ awayPoints, homePoints }),
+      }
+    );
 
     if (!res.ok) {
       const data = await res.json();
@@ -119,7 +128,7 @@ export async function updateIsCompletedStatus(
 }
 
 export async function deleteBet(id, token, amount) {
-  // const bet = await fetch(`http://localhost:3000/bets/delete/${id}`, {
+  // const bet = await fetch(`https://sideline-api.onrender.com/bets/delete/${id}`, {
   //   method: "GET",
   //   headers: {
   //     accept: "application/json",
@@ -130,31 +139,37 @@ export async function deleteBet(id, token, amount) {
   // if (!bet.ok) throw Error(result?.message ?? "Something went wrong.");
   // const amount = betResult.amount;
   console.log(amount);
-  const response = await fetch(`http://localhost:3000/bets/delete/${id}`, {
-    method: "DELETE",
-    headers: {
-      accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await fetch(
+    `https://sideline-api.onrender.com/bets/delete/${id}`,
+    {
+      method: "DELETE",
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
   const result = await response.json();
   if (!response.ok) throw Error(result?.message ?? "Something went wrong.");
-  const creditsRes = await fetch(`http://localhost:3000/credits/return`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      amount,
-    }),
-  });
+  const creditsRes = await fetch(
+    `https://sideline-api.onrender.com/credits/return`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        amount,
+      }),
+    }
+  );
   const creditsData = await creditsRes.json();
   return result, creditsData;
 }
 
 export const getBets = async (token) => {
-  const response = await fetch("http://localhost:3000/bets", {
+  const response = await fetch("https://sideline-api.onrender.com/bets", {
     method: "GET",
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -164,13 +179,16 @@ export const getBets = async (token) => {
 
 // Getting game info.
 export async function getGame(id, token) {
-  const response = await fetch(`http://localhost:3000/games/${id}`, {
-    method: "GET",
-    headers: {
-      accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await fetch(
+    `https://sideline-api.onrender.com/games/${id}`,
+    {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
   const result = await response.json();
   if (!response.ok) throw Error(result?.message ?? "Something went wrong.");
   return result;
@@ -203,21 +221,24 @@ export async function placeBet(
   const teamId = betTeam.team_id;
   const favoredTeamId = favoredTeam.team_id;
   try {
-    const res = await fetch("http://localhost:3000/bets/place_bet", {
-      //Fix the route later
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        gameId,
-        teamId,
-        favoredTeamId,
-        amount,
-        betSpread,
-      }), //What belongs in here?
-    });
+    const res = await fetch(
+      "https://sideline-api.onrender.com/bets/place_bet",
+      {
+        //Fix the route later
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          gameId,
+          teamId,
+          favoredTeamId,
+          amount,
+          betSpread,
+        }), //What belongs in here?
+      }
+    );
     if (!res.ok) {
       const data = await res.json();
       console.error(data.error);
@@ -225,16 +246,19 @@ export async function placeBet(
       return;
     }
 
-    const creditsRes = await fetch(`http://localhost:3000/credits/use`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        amount,
-      }),
-    });
+    const creditsRes = await fetch(
+      `https://sideline-api.onrender.com/credits/use`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          amount,
+        }),
+      }
+    );
     const data = await res.json();
     const creditsData = await creditsRes.json();
     return data, creditsData;
@@ -269,7 +293,7 @@ export async function fetchUser(setUser) {
     return;
   }
   try {
-    const res = await fetch("http://localhost:3000/users/me", {
+    const res = await fetch("https://sideline-api.onrender.com/users/me", {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (!res.ok) throw new Error("Failed to fetch user");
@@ -283,15 +307,18 @@ export async function fetchUser(setUser) {
 export async function updateUserScore(amount_won) {
   const token = localStorage.getItem("token");
   try {
-    const res = await fetch(`http://localhost:3000/leaderboard/update/`, {
-      //Fix the route later
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ amount_won }),
-    });
+    const res = await fetch(
+      `https://sideline-api.onrender.com/leaderboard/update/`,
+      {
+        //Fix the route later
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ amount_won }),
+      }
+    );
 
     if (!res.ok) {
       const data = await res.json();
