@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from "react";
 
-export const API = "http://localhost:3000";
+export const API = "http://localhost:3000/api";
 
 const ApiContext = createContext();
 

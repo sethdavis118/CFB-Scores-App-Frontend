@@ -1,46 +1,38 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useApi } from "../api/ApiContext.jsx";
 
 export default function LoginForm() {
-  const navigate = useNavigate();
+  const { request, setUser } = useApi();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError("");
-
     try {
-      const res = await fetch("http://localhost:3000/users/login", {
+      const { token } = await request("/users/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
-      if (!res.ok) {
-        const data = await res.json();
-        setError(data.error || "Login failed");
-        return;
-      }
-
-      const data = await res.json();
-      localStorage.setItem("token", data.token);
-      navigate("/account");
+      localStorage.setItem("token", token);
+      // optionally fetch /me after login
+      const me = await request("/users/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUser(me);
     } catch (err) {
       console.error("Login error:", err);
-      setError("Something went wrong");
     }
   };
 
   return (
-    <div className= "login-form">
+    <div className="login-form">
       <h2>Login</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
       <form onSubmit={handleLogin}>
         <div>
           <label>Email:</label>
           <input
+            type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
