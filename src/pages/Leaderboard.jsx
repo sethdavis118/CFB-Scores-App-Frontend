@@ -7,7 +7,9 @@ export default function Leaderboard() {
   useEffect(() => {
     async function fetchLeaderboard() {
       try {
-        const res = await fetch("http://localhost:3000/leaderboard");
+        const res = await fetch(
+          "https://sideline-api.onrender.com/leaderboard"
+        );
         if (!res.ok) throw new Error("Failed to fetch leaderboard");
         const data = await res.json();
         setLeaders(data);
@@ -47,4 +49,3 @@ export default function Leaderboard() {
     </div>
   );
 }
-

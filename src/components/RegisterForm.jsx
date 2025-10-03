@@ -49,11 +49,14 @@ export default function RegisterForm() {
     };
 
     try {
-      const res = await fetch("http://localhost:3000/users/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const res = await fetch(
+        "https://sideline-api.onrender.com/users/register",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
 
       let data;
       try {

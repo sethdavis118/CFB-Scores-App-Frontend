@@ -24,7 +24,7 @@ export default function Account() {
     }
     async function fetchUser() {
       try {
-        const res = await fetch("http://localhost:3000/users/me", {
+        const res = await fetch("https://sideline-api.onrender.com/users/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!res.ok) throw new Error("Failed to fetch user");
@@ -51,7 +51,7 @@ export default function Account() {
     try {
       setRefreshing(true);
       const creditsRes = await fetch(
-        `http://localhost:3000/credits/${userId}/raw`,
+        `https://sideline-api.onrender.com/credits/${userId}/raw`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
