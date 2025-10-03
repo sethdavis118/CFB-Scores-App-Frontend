@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { getBets, getGames } from "../api/ApiFunctions";
+import { getBets, getGames } from "../api/ApiFunctions.js";
 // import { RestaurantRounded } from "@mui/icons-material";
-import BetCard from "../components/BetCard";
+import BetCard from "../components/BetCard.jsx";
 
 export default function Bets() {
   //   // A bet should contain:

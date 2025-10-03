@@ -268,40 +268,22 @@ export async function placeBet(
 }
 
 export async function fetchLiveGames(setLiveGames) {
-  const response = await fetch(
-    "https://api.collegefootballdata.com/scoreboard?classification=fbs",
-    {
-      method: "GET",
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${import.meta.env.VITE_SCOREBOARD_BEARER_TOKEN}`,
-      },
-    }
-  );
-  // console.log(response);
+  const response = await fetch(`${import.meta.env.VITE_API_BASE}/scoreboard`, {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+    },
+  });
+
   const isJson = /json/.test(response.headers.get("Content-Type"));
   const result = isJson ? await response.json() : undefined;
-  if (!response.ok) throw Error(result?.message ?? "Something went wrong.");
-  // console.log(result);
+
+  if (!response.ok) {
+    throw Error(result?.error ?? "Something went wrong.");
+  }
+
   setLiveGames(result);
   return result;
-}
-
-export async function fetchUser(setUser) {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    return;
-  }
-  try {
-    const res = await fetch("https://sideline-api.onrender.com/users/me", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!res.ok) throw new Error("Failed to fetch user");
-    const data = await res.json();
-    setUser(data);
-  } catch (err) {
-    console.error("Error loading account:", err);
-  }
 }
 
 export async function updateUserScore(amount_won) {
@@ -331,4 +313,24 @@ export async function updateUserScore(amount_won) {
   } catch (error) {
     console.error(error);
   }
+}
+
+export async function fetchUser(setUser) {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("No token found");
+
+  const response = await fetch(`${import.meta.env.VITE_API_BASE}/users/me`, {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json();
+  if (!response.ok) throw Error(data?.error ?? "Failed to fetch user");
+
+  if (setUser) setUser(data);
+  return data;
+  got;
 }

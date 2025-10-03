@@ -1,7 +1,8 @@
 // From Fitness Trackr Pro (and other places)
 import { createContext, useContext, useState } from "react";
 
-export const API = "https://sideline-api.onrender.com";
+export const API =
+  import.meta.env.VITE_API || "https://sideline-api.onrender.com";
 
 const ApiContext = createContext();
 
