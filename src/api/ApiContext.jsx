@@ -1,4 +1,3 @@
-// From Fitness Trackr Pro (and other places)
 import { createContext, useContext, useState } from "react";
 
 export const API = "http://localhost:3000";
@@ -9,10 +8,14 @@ export function ApiProvider({ children }) {
   const [user, setUser] = useState(null);
 
   const request = async (resource, options = {}) => {
-    const res = await fetch(resource, {
+    const normalized = resource.startsWith("/") ? resource : `${resource}`;
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(API + normalized, {
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...(options.headers || {}),
       },
       ...options,
@@ -23,12 +26,8 @@ export function ApiProvider({ children }) {
       throw new Error(text || `Request failed: ${res.status}`);
     }
 
-    // handle empty responses
-    const contentType = res.headers.get("content-type") || "";
-    if (!contentType.includes("application/json")) return null;
     return res.json();
   };
-
   return (
     <ApiContext.Provider value={{ request, user, setUser }}>
       {children}

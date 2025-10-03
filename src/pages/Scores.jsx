@@ -40,9 +40,9 @@ export default function Scores() {
     async function loadData() {
       try {
         // Replace fetchLiveGames
-        const games = await request("/games");
+        const games = await request("/api/games");
         // Replace fetchUser
-        const me = await request("/users/me");
+        const me = await request("/api/users/me");
         console.log("User favorite_team:", me?.favorite_team);
         console.log("First game sample:", games[0]);
         setLiveGames(games);
