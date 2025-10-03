@@ -38,3 +38,10 @@
 .read-the-docs {
   color: #888;
 }
+
+body {
+  background-image: url(field.jpg);
+  background-attachment: fixed;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
