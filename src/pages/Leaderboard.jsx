@@ -1,27 +1,21 @@
 import { useEffect, useState } from "react";
+import { useApi } from "../api/ApiContext";
 
 export default function Leaderboard() {
   const [leaders, setLeaders] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const request = useApi();
 
   useEffect(() => {
-    async function fetchLeaderboard() {
+    async function loadLeaderboard() {
       try {
-        const res = await fetch("http://localhost:3000/leaderboard");
-        if (!res.ok) throw new Error("Failed to fetch leaderboard");
-        const data = await res.json();
+        const data = await request("/leaderboard");
         setLeaders(data);
       } catch (err) {
         console.error("Error loading leaderboard:", err);
-      } finally {
-        setLoading(false);
       }
     }
-
-    fetchLeaderboard();
-  }, []);
-
-  if (loading) return <p className="loading">Loading leaderboard...</p>;
+    loadLeaderboard();
+  }, [request]);
 
   return (
     <div className="leaderboard-container">
@@ -47,4 +41,3 @@ export default function Leaderboard() {
     </div>
   );
 }
-

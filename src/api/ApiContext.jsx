@@ -5,48 +5,39 @@ export const API = "http://localhost:3000";
 
 const ApiContext = createContext();
 
-// Token support may need to be added later.
 export function ApiProvider({ children }) {
-  const headers = { "Content-Type": "application/json" };
+  const [user, setUser] = useState(null);
 
-  /**
-   * Makes an API call and parses the response as JSON if possible.
-   * Throws an error if anything goes wrong.
-   */
-  const request = async (resource, options) => {
-    // Fetches from the API.
-    const response = await fetch(API + resource, {
+  const request = async (resource, options = {}) => {
+    const res = await fetch(resource, {
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        ...(options.headers || {}),
+      },
       ...options,
-      headers,
     });
-    const isJson = /json/.test(response.headers.get("Content-Type"));
-    const result = isJson ? await response.json() : undefined;
-    if (!response.ok) throw Error(result?.message ?? "Something went wrong.");
-    return result;
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(text || `Request failed: ${res.status}`);
+    }
+
+    // handle empty responses
+    const contentType = res.headers.get("content-type") || "";
+    if (!contentType.includes("application/json")) return null;
+    return res.json();
   };
 
-  // Creating tags object to update certain objects.
-  const [tags, setTags] = useState({});
-
-  /** Stores the provided query function for a given tag */
-  const provideTag = (tag, query) => {
-    setTags({ ...tags, [tag]: query });
-  };
-
-  /** Calls all query functions associated with the given tags */
-  const invalidateTags = (tagsToInvalidate) => {
-    tagsToInvalidate.forEach((tag) => {
-      const query = tags[tag];
-      if (query) query();
-    });
-  };
-
-  const value = { request, provideTag, invalidateTags };
-  return <ApiContext.Provider value={value}>{children}</ApiContext.Provider>;
+  return (
+    <ApiContext.Provider value={{ request, user, setUser }}>
+      {children}
+    </ApiContext.Provider>
+  );
 }
 
-export function useApi() {
-  const context = useContext(ApiContext);
-  if (!context) throw Error("useApi must be used within ApiProvider");
-  return context;
-}
+export const useApi = () => {
+  const ctx = useContext(ApiContext);
+  if (!ctx) throw new Error("useApi must be used within ApiProvider");
+  return ctx;
+};

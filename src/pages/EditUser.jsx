@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import useQuery from "../api/useQuery";
-import { apiFetch } from "../src/api/client.js";
+import { apiFetch } from "../api/client.js";
 
 export default function EditUser() {
   const [user, setUser] = useState();
@@ -12,13 +12,13 @@ export default function EditUser() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log(`EditUser Mounted`);
     async function fetchUser() {
       try {
         setLoading(true);
-        const data = await apiFetch("/api/users");
-        setUser(data);
+        apiFetch("/api/users/me").then((data) => setUser(data));
       } catch (err) {
-        console.error("Failed to load bets:", err);
+        console.error("Failed to edit user:", err);
       } finally {
         setLoading(false);
       }

@@ -1,8 +1,9 @@
 import Scorecard from "../components/Scorecard";
 import { useState, useEffect } from "react";
-import { fetchLiveGames, fetchUser } from "../api/ApiFunctions";
+import { useApi } from "../api/ApiContext.jsx";
 
 export default function Scores() {
+  const { request } = useApi();
   const [liveGames, setLiveGames] = useState();
   const [user, setUser] = useState();
   const date = new Date();
@@ -12,8 +13,8 @@ export default function Scores() {
     if (user) {
       const favoriteGame = liveGames?.find(
         (game) =>
-          game.awayTeam.id === user.favorite_team ||
-          game.homeTeam.id === user.favorite_team
+          game?.awayTeam?.id === user.favorite_team ||
+          game?.homeTeam?.id === user.favorite_team
       );
       console.log(favoriteGame);
       return favoriteGame;
@@ -36,16 +37,31 @@ export default function Scores() {
   };
 
   useEffect(() => {
-    fetchLiveGames(setLiveGames);
-    fetchUser(setUser);
+    async function loadData() {
+      try {
+        // Replace fetchLiveGames
+        const games = await request("/games");
+        // Replace fetchUser
+        const me = await request("/users/me");
+        console.log("User favorite_team:", me?.favorite_team);
+        console.log("First game sample:", games[0]);
+        setLiveGames(games);
+        setUser(me);
+      } catch (err) {
+        console.error("Error in Scores:", err);
+      }
+    }
+
+    loadData();
   }, []);
 
   const favoriteGame = getFavoriteGame();
-  const gamesList = liveGames?.filter(
-    (game) =>
-      game.awayTeam.id !== user?.favorite_team &&
-      game.homeTeam.id !== user?.favorite_team
-  );
+  const gamesList = liveGames?.filter((game) => {
+    const awayId = game.awayTeam?.id;
+    const homeId = game.homeTeam?.id;
+
+    return awayId !== user?.favorite_team && homeId !== user?.favorite_team;
+  });
   gamesList?.sort(sortFunction);
 
   return (
