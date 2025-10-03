@@ -232,7 +232,7 @@ export default function Scorecard({ game, user }) {
               </label>
               <div className="scorecared-bet-buttons">
                 <button
-                  onClick={() => displayAlert(true)}
+                  onClick={() => displayAlert(false)}
                   className="scorecard-cancel-bet-btn"
                 >
                   Cancel
