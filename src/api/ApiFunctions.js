@@ -332,3 +332,31 @@ export async function updateUserScore(amount_won) {
     console.error(error);
   }
 }
+
+export async function editAccount(token, payload) {
+  try {
+    const res = await fetch(
+      `https://sideline-api.onrender.com/users/edit`, // Change link
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ payload }),
+      }
+    );
+
+    if (!res.ok) {
+      const data = await res.json();
+      console.error(data.error);
+      return;
+    }
+
+    const data = await res.json();
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+}
