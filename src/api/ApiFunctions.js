@@ -194,6 +194,16 @@ export async function getGame(id, token) {
   return result;
 }
 
+export const getBet = async (id) => {
+  const token = localStorage.getItem("token");
+  const response = await fetch(`https://sideline-api.onrender.com/bets/${id}`, {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const result = await response.json();
+  return result;
+};
+
 export async function getGames(bets, setBetGames, token) {
   // Getting the game data for the bet-on games.
   if (!bets) {
@@ -335,17 +345,14 @@ export async function updateUserScore(amount_won) {
 
 export async function editAccount(token, payload) {
   try {
-    const res = await fetch(
-      `https://sideline-api.onrender.com/users/edit`, // Change link
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ payload }),
-      }
-    );
+    const res = await fetch(`https://sideline-api.onrender.com/users/edit`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ payload }),
+    });
 
     if (!res.ok) {
       const data = await res.json();

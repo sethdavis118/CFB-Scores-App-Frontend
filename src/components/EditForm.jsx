@@ -99,6 +99,7 @@ export default function EditForm() {
         </div>
         <button
           onClick={() => {
+            console.log("Clicked!");
             const payload = { username, email, favoriteTeam, favoriteConf };
             console.log("Payload", payload);
             editAccount(token, payload);
