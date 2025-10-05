@@ -10,6 +10,7 @@ import Leaderboard from "./pages/Leaderboard";
 import Scores from "./pages/Scores.jsx";
 import LoginForm from "./components/LoginForm";
 import RegisterForm from "./components/RegisterForm";
+import EditForm from "./components/EditForm";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegisterForm />} />
         <Route path="/scores" element={<Scores />} />
+        <Route path="/edit" element={<EditForm />} />
 
         <Route path="*" element={<Error404 />} />
       </Route>

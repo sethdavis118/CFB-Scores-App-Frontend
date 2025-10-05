@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import useQuery from "../api/useQuery";
 
 export default function Account() {
@@ -115,6 +115,7 @@ export default function Account() {
       </button>
 
       <br />
+      <Link to="/edit">Edit Account</Link>
       <button onClick={handleLogout}>Logout</button>
     </div>
   );
