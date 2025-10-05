@@ -5,6 +5,7 @@ import {
   checkIsCompleted,
   deleteBet,
   updateUserScore,
+  getBet,
 } from "../api/ApiFunctions";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
@@ -36,6 +37,35 @@ export default function BetCard({ bet, betGame, token, setBets }) {
     localStorage.removeItem(`hasPlacedBet-${betGame.game_id}`);
     setBets();
   }
+
+  async function setWinAndPoints() {
+    if (winStatus === true) {
+      const tempBet = await getBet(bet?.id);
+      if (!tempBet.win_status) {
+        editBetWinStatus(bet?.game_id, token, winStatus);
+        const sendAmount = bet?.amount;
+        // This function will need to be tested;
+        updateUserScore(sendAmount);
+      } else {
+        editBetWinStatus(bet?.game_id, token, winStatus);
+      }
+    }
+    if (winStatus === false) {
+      const tempBet = await getBet(bet?.id);
+      if (!tempBet.winStatus) {
+        editBetWinStatus(bet?.game_id, token, winStatus);
+        const sendAmount = -bet?.amount;
+        updateUserScore(sendAmount);
+      } else {
+        editBetWinStatus(bet?.game_id, token, winStatus);
+      }
+    }
+    if (winStatus === null && betGame?.completed === true) {
+      const sendAmount = 0;
+      updateUserScore(sendAmount);
+      console.log("The game pushed");
+    }
+  }
   // I think I did this logic right. Test it a lot to be sure.
   function decideWinStatus() {
     console.log(bet?.winStatus);
@@ -47,12 +77,12 @@ export default function BetCard({ bet, betGame, token, setBets }) {
       if (bet.favored_team === bet.team_id) {
         // spread is correct
         if (homeTeamBet) {
-          // The home team is the favorite.
-          if (betGame?.away_points - betGame?.home_points > bet?.odds) {
+          // The home team is the favorite and bet on.
+          if (betGame?.away_points - betGame?.home_points < bet?.odds) {
             console.log("The home team is the favorite and covered");
             setWinStatus(true); // I think...
           }
-          if (betGame?.away_points - betGame?.home_points < bet?.odds) {
+          if (betGame?.away_points - betGame?.home_points > bet?.odds) {
             console.log("The home team is the favorite and did not cover");
             setWinStatus(false);
           }
@@ -62,12 +92,12 @@ export default function BetCard({ bet, betGame, token, setBets }) {
           }
         } else {
           console.log("Inside this if-statement");
-          // The away team is the favorite.
-          if (betGame?.home_points - betGame?.away_points > bet?.odds) {
+          // The away team is the favorite and bet on.
+          if (betGame?.home_points - betGame?.away_points < bet?.odds) {
             console.log("The away team is the favorite and covered");
             setWinStatus(true);
           }
-          if (betGame?.home_points - betGame?.away_points < bet?.odds) {
+          if (betGame?.home_points - betGame?.away_points > bet?.odds) {
             console.log("The away team is the favorite and did not cover");
             setWinStatus(false);
           }
@@ -79,51 +109,37 @@ export default function BetCard({ bet, betGame, token, setBets }) {
       } else if (bet.favored_team !== bet.team_id) {
         // spread needs to be changed
         if (homeTeamBet) {
-          // The home team is the favorite.
-          if (betGame?.away_points - betGame?.home_points > -bet?.odds) {
+          // The home team is the bet on team and the underdog.
+          if (betGame?.away_points - betGame?.home_points < bet?.odds) {
             console.log("The home team is the favorite and covered");
             setWinStatus(true); // I think...
           }
-          if (betGame?.away_points - betGame?.home_points < -bet?.odds) {
+          if (betGame?.away_points - betGame?.home_points > bet?.odds) {
             console.log("The home team is the favorite and did not cover");
             setWinStatus(false);
           }
-          if (betGame?.away_points - betGame?.home_points === -bet?.odds) {
+          if (betGame?.away_points - betGame?.home_points === bet?.odds) {
             console.log("The home team is the favorite and pushed");
             setWinStatus(null);
           }
         } else {
-          // The away team is the favorite.
-          if (betGame?.home_points - betGame?.away_points > -bet?.odds) {
+          // The away team is the bet on team and the underdog.
+          if (betGame?.home_points - betGame?.away_points < bet?.odds) {
             console.log("The away team is the favorite and covered");
             setWinStatus(true);
           }
-          if (betGame?.home_points - betGame?.away_points < -bet?.odds) {
+          if (betGame?.home_points - betGame?.away_points > bet?.odds) {
             console.log("The away team is the favorite and did not cover");
             setWinStatus(false);
           }
-          if (betGame?.home_points - betGame?.away_points === -bet?.odds) {
+          if (betGame?.home_points - betGame?.away_points === bet?.odds) {
             console.log("The away team is the favorite and pushed");
             setWinStatus(null);
           }
         }
       }
 
-      if (winStatus === true) {
-        editBetWinStatus(bet?.game_id, token, winStatus);
-        const sendAmount = bet?.amount;
-        // This function will need to be tested;
-        updateUserScore(sendAmount);
-      }
-      if (winStatus === false) {
-        const sendAmount = -bet?.amount;
-        updateUserScore(sendAmount);
-      }
-      if (winStatus === null && betGame?.completed === true) {
-        const sendAmount = 0;
-        updateUserScore(sendAmount);
-        console.log("The game pushed");
-      }
+      setWinAndPoints();
     }
   }
 
