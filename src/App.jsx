@@ -7,7 +7,7 @@ import Error404 from "./pages/Error404";
 import Launch from "./pages/Launch";
 import Layout from "./layout/Layout";
 import Leaderboard from "./pages/Leaderboard";
-import Scores from "./pages/Scores";
+import Scores from "./pages/Scores.jsx";
 import LoginForm from "./components/LoginForm";
 import RegisterForm from "./components/RegisterForm";
 import EditForm from "./components/EditForm";

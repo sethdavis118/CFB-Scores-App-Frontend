@@ -1,0 +1,4 @@
+root: C:\Users\mhort\OneDrive\Desktop\Coursework\2507-FTB-ET-WEB-FT\capstone-frontend\CFB-Scores-App-Frontend 
+path: C:\Program Files\nodejs 
+arch: 64 
+proxy: none
