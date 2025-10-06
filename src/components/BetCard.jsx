@@ -42,22 +42,22 @@ export default function BetCard({ bet, betGame, token, setBets }) {
     if (winStatus === true) {
       const tempBet = await getBet(bet?.id);
       if (!tempBet.win_status) {
-        editBetWinStatus(bet?.id, token, winStatus);
+        editBetWinStatus(bet?.game_id, token, winStatus);
         const sendAmount = bet?.amount;
         // This function will need to be tested;
         updateUserScore(sendAmount);
       } else {
-        editBetWinStatus(bet?.id, token, winStatus);
+        editBetWinStatus(bet?.game_id, token, winStatus);
       }
     }
     if (winStatus === false) {
       const tempBet = await getBet(bet?.id);
       if (!tempBet.winStatus) {
-        editBetWinStatus(bet?.id, token, winStatus);
+        editBetWinStatus(bet?.game_id, token, winStatus);
         const sendAmount = -bet?.amount;
         updateUserScore(sendAmount);
       } else {
-        editBetWinStatus(bet?.id, token, winStatus);
+        editBetWinStatus(bet?.game_id, token, winStatus);
       }
     }
     if (winStatus === null && betGame?.completed === true) {
@@ -150,19 +150,12 @@ export default function BetCard({ bet, betGame, token, setBets }) {
 
   useEffect(() => {
     if (awayTeam?.team_id && bet.team_id) {
-      console.log(bet?.team_id);
-      console.log(awayTeam?.team_id);
-      console.log(homeTeam?.team_id);
-      if (bet?.team_id === awayTeam?.team_id) {
+      if (bet.team_id === awayTeam?.team_id) {
         setBetTeam(awayTeam);
         setHomeTeamBet(false);
-        console.log("set hometeambet to false");
-        console.log(homeTeamBet);
-      } else if (bet?.team_id === homeTeam?.team_id) {
+      } else if (bet.team_id === homeTeam?.team_id) {
         setBetTeam(homeTeam);
         setHomeTeamBet(true);
-        console.log("set hometeambet to true");
-        console.log(homeTeamBet);
       }
       checkIsCompleted(token, betGame, isComplete, setIsComplete);
       decideWinStatus();
