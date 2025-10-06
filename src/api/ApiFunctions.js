@@ -195,6 +195,7 @@ export async function getGame(id, token) {
 }
 
 export const getBet = async (id) => {
+  console.log("Testing");
   const token = localStorage.getItem("token");
   const response = await fetch(`https://sideline-api.onrender.com/bets/${id}`, {
     method: "GET",
