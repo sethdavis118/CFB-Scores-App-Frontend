@@ -277,23 +277,23 @@ export async function placeBet(
   }
 }
 
-export async function fetchLiveGames(setLiveGames) {
-  const response = await fetch(`${import.meta.env.VITE_API_BASE}/scoreboard`, {
-    method: "GET",
-    headers: {
-      accept: "application/json",
-    },
-  });
+export async function fetchLiveGames() {
+  try {
+    const BASE_URL =
+      import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
 
-  const isJson = /json/.test(response.headers.get("Content-Type"));
-  const result = isJson ? await response.json() : undefined;
+    const response = await fetch(`${BASE_URL}/scoreboard?classification=fbs`);
 
-  if (!response.ok) {
-    throw Error(result?.error ?? "Something went wrong.");
+    if (!response.ok) {
+      throw new Error(`Server returned ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error in fetchLiveGames:", error);
+    throw new Error("Something went wrong.");
   }
-
-  setLiveGames(result);
-  return result;
 }
 
 export async function updateUserScore(amount_won) {
@@ -342,5 +342,24 @@ export async function fetchUser(setUser) {
 
   if (setUser) setUser(data);
   return data;
-  got;
+}
+
+export async function editAccount(token, updates) {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_API_BASE}/users/me`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(updates),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.mesage || " Failed to update account");
+    }
+  } catch (err) {
+    console.error(`Error in editAccount: ${err}`);
+  }
 }

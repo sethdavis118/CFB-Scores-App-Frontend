@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
-import useQuery from "/../api/useQuery.js";
-import { apiFetch } from "/../api/client.js";
+//import { useNavigate } from "react-router";
+import useQuery from "../api/useQuery.js";
+//import { apiFetch } from "/../api/client.js";
+import { useApi } from "../api/ApiContext.js";
 
 export default function EditUser() {
   const { user, request, setUser } = useApi(); // 👈 pull user + request from context
@@ -11,26 +12,26 @@ export default function EditUser() {
     favoriteTeam: "",
   });
   const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState("");
+  const [credits, setCredits] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    try {
-      if (user) {
-        setFormData({
-          username: user.username || "",
-          email: user.email || "",
-          favorite_team: user.favorite_team || "",
-        });
-      }
-      setLoading(false);
-    } catch (err) {
-      console.error("Failed to edit user:", err);
-    } finally {
+    if (user) {
+      setFormData({
+        username: user.username || "",
+        email: user.email || "",
+        favorite_team: user.favorite_team || "",
+        favorite_conference: user.favorite_conference || "",
+      });
+      setCredits(user.credits || 0);
       setLoading(false);
     }
   }, [user]);
 
   function handleChange(e) {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   }
 
   const { data: team } = useQuery(
@@ -40,14 +41,40 @@ export default function EditUser() {
   async function handleSubmit(e) {
     e.preventDefault();
     try {
-      const updates = await request("/users/me", {
-        method: PUT,
+      const updatedUser = await request("/users/me", {
+        method: "PUT",
         body: JSON.stringify(formData),
       });
+      setUser(updatedUser);
+      setMessage("Accont updated");
     } catch (err) {
       console.error(`Error on handleSubmit: ${err}`);
+      setMessage("Update failed");
     }
   }
+
+  async function handleRefreshCredits() {
+    if (!user) return;
+    setRefreshing(true);
+
+    try {
+      const res = await request(`users/${user.id}/credits`, { method: "GET" });
+      if (res && typeof res.credits === "number") {
+        setCredits(res.credits);
+      }
+    } catch (err) {
+      console.error(`Error refreshing credits: ${err}`);
+    } finally {
+      setRefreshing(false);
+    }
+  }
+
+  function handleLogout() {
+    localStorage.removeItem("token");
+    setUser(null);
+    setMessage("Logged out successfuly");
+  }
+
   if (!user) return <p>You have to be logged in to edit your profile!</p>;
   if (loading) return <p>Loading...</p>;
 
@@ -64,15 +91,13 @@ export default function EditUser() {
         <p>Current Credits: {credits !== null ? credits : "Loading..."}</p>
       </section>
 
-      <form className="account-form" onSubmit={handleUpdate}>
+      <form className="account-form" onSubmit={handleSubmit}>
         <div className="form-group">
           <label>Favorite Team ID:</label>
           <input
             type="number"
             value={user.favorite_team || ""}
-            onChange={(e) =>
-              setUser({ ...user, favorite_team: parseInt(e.target.value, 10) })
-            }
+            onChange={handleChange}
           />
         </div>
         <div className="form-group">
@@ -80,9 +105,7 @@ export default function EditUser() {
           <input
             type="text"
             value={user.favorite_conference || ""}
-            onChange={(e) =>
-              setUser({ ...user, favorite_conference: e.target.value })
-            }
+            onChange={handleChange}
           />
         </div>
         <button type="submit" className="sports-btn">
@@ -90,10 +113,8 @@ export default function EditUser() {
         </button>
       </form>
 
-      {message && <p>{message}</p>}
-
       <button
-        onClick={() => fetchCredits(user.id)}
+        onClick={handleRefreshCredits}
         disabled={refreshing}
         className="sports-btn"
       >
@@ -103,6 +124,7 @@ export default function EditUser() {
       <button onClick={handleLogout} className="sports-btn">
         Logout
       </button>
+      {message && <p>{message}</p>}
     </section>
   );
 }
