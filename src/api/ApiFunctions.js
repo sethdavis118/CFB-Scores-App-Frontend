@@ -194,16 +194,6 @@ export async function getGame(id, token) {
   return result;
 }
 
-export const getBet = async (id) => {
-  const token = localStorage.getItem("token");
-  const response = await fetch(`https://sideline-api.onrender.com/bets/${id}`, {
-    method: "GET",
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  const result = await response.json();
-  return result;
-};
-
 export async function getGames(bets, setBetGames, token) {
   // Getting the game data for the bet-on games.
   if (!bets) {
@@ -277,22 +267,40 @@ export async function placeBet(
   }
 }
 
-export async function fetchLiveGames() {
-  try {
-    const BASE_URL =
-      import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
-
-    const response = await fetch(`${BASE_URL}/scoreboard?classification=fbs`);
-
-    if (!response.ok) {
-      throw new Error(`Server returned ${response.status}`);
+export async function fetchLiveGames(setLiveGames) {
+  const response = await fetch(
+    "https://api.collegefootballdata.com/scoreboard?classification=fbs",
+    {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${import.meta.env.VITE_SCOREBOARD_BEARER_TOKEN}`,
+      },
     }
+  );
+  // console.log(response);
+  const isJson = /json/.test(response.headers.get("Content-Type"));
+  const result = isJson ? await response.json() : undefined;
+  if (!response.ok) throw Error(result?.message ?? "Something went wrong.");
+  // console.log(result);
+  setLiveGames(result);
+  return result;
+}
 
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error in fetchLiveGames:", error);
-    throw new Error("Something went wrong.");
+export async function fetchUser(setUser) {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    return;
+  }
+  try {
+    const res = await fetch("https://sideline-api.onrender.com/users/me", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) throw new Error("Failed to fetch user");
+    const data = await res.json();
+    setUser(data);
+  } catch (err) {
+    console.error("Error loading account:", err);
   }
 }
 
@@ -322,44 +330,5 @@ export async function updateUserScore(amount_won) {
     return data;
   } catch (error) {
     console.error(error);
-  }
-}
-
-export async function fetchUser(setUser) {
-  const token = localStorage.getItem("token");
-  if (!token) throw new Error("No token found");
-
-  const response = await fetch(`${import.meta.env.VITE_API_BASE}/users/me`, {
-    method: "GET",
-    headers: {
-      accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  const data = await response.json();
-  if (!response.ok) throw Error(data?.error ?? "Failed to fetch user");
-
-  if (setUser) setUser(data);
-  return data;
-}
-
-export async function editAccount(token, updates) {
-  try {
-    const response = await fetch(`${import.meta.env.VITE_API_BASE}/users/me`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(updates),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.mesage || " Failed to update account");
-    }
-  } catch (err) {
-    console.error(`Error in editAccount: ${err}`);
   }
 }
