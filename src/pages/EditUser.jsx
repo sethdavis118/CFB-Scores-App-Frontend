@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 //import { useNavigate } from "react-router";
 import useQuery from "../api/useQuery.js";
 //import { apiFetch } from "/../api/client.js";
-import { useApi } from "../api/ApiContext.js";
+import { fetchUser } from "../api/ApiFunctions.js";
 
 export default function EditUser() {
-  const { user, request, setUser } = useApi(); // 👈 pull user + request from context
+  const [user, setUser] = useState();
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -15,6 +15,10 @@ export default function EditUser() {
   const [message, setMessage] = useState("");
   const [credits, setCredits] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => {
+    fetchUser(setUser);
+  }, []);
 
   useEffect(() => {
     if (user) {
