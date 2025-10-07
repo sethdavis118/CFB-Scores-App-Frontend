@@ -40,7 +40,7 @@
 }
 
 body {
-  background-image: url(./field.jpg);
+  background-image: url(../field.jpg);
   background-attachment: fixed;
   background-size: cover;
   background-repeat: no-repeat;
