@@ -115,7 +115,9 @@ export default function Account() {
       </button>
 
       <br />
-      <Link to="/edit">Edit Account</Link>
+      <button>
+        <Link to="/edit">Edit Account</Link>
+      </button>
       <button onClick={handleLogout}>Logout</button>
     </div>
   );
