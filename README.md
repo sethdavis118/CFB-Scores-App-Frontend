@@ -14,7 +14,6 @@ Welcome to SideLine, the only college football site you'll ever need. A place to
 - Other: RESTful APIs, authentication, secure data handling
 
 # Stretch Goals
-- Mobile responsiveness
 - Text notifications
 - User messaging
 - Leagues
