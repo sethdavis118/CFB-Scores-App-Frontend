@@ -18,9 +18,6 @@ export default function Navbar() {
           <NavLink to="/account" className="navbar-link">
             Account
           </NavLink>
-          <NavLink to="/account/edit" className="navbar-link">
-            Edit User
-          </NavLink>
         </>
       )}
     </div>

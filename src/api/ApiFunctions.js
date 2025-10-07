@@ -346,13 +346,14 @@ export async function updateUserScore(amount_won) {
 
 export async function editAccount(token, payload) {
   try {
-    const res = await fetch(`https://sideline-api.onrender.com/users/edit`, {
+    const res = await fetch(`http://localhost:3000/users/edit`, {
+      // https://sideline-api.onrender.com/users/edit
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ payload }),
+      body: JSON.stringify(payload),
     });
 
     if (!res.ok) {

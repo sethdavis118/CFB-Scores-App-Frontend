@@ -1,15 +1,10 @@
 // From Fitness Trackr Pro (and other places)
 import { createContext, useContext, useState } from "react";
-
-export const API =
-  import.meta.env.VITE_API || "https://sideline-api.onrender.com";
-
+export const API = "https://sideline-api.onrender.com";
 const ApiContext = createContext();
-
 // Token support may need to be added later.
 export function ApiProvider({ children }) {
   const headers = { "Content-Type": "application/json" };
-
   /**
    * Makes an API call and parses the response as JSON if possible.
    * Throws an error if anything goes wrong.
@@ -25,15 +20,12 @@ export function ApiProvider({ children }) {
     if (!response.ok) throw Error(result?.message ?? "Something went wrong.");
     return result;
   };
-
   // Creating tags object to update certain objects.
   const [tags, setTags] = useState({});
-
   /** Stores the provided query function for a given tag */
   const provideTag = (tag, query) => {
     setTags({ ...tags, [tag]: query });
   };
-
   /** Calls all query functions associated with the given tags */
   const invalidateTags = (tagsToInvalidate) => {
     tagsToInvalidate.forEach((tag) => {
@@ -41,11 +33,9 @@ export function ApiProvider({ children }) {
       if (query) query();
     });
   };
-
   const value = { request, provideTag, invalidateTags };
   return <ApiContext.Provider value={value}>{children}</ApiContext.Provider>;
 }
-
 export function useApi() {
   const context = useContext(ApiContext);
   if (!context) throw Error("useApi must be used within ApiProvider");

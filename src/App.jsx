@@ -11,6 +11,7 @@ import Scores from "./pages/Scores.jsx";
 import LoginForm from "./components/LoginForm";
 import RegisterForm from "./components/RegisterForm";
 import EditForm from "./components/EditForm";
+import EditUser from "./pages/EditUser.jsx";
 
 function App() {
   return (

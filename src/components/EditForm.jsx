@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { editAccount, fetchUser } from "../api/ApiFunctions";
 import { getTeam } from "../api/ApiFunctions";
 import useQuery from "../api/useQuery";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 export default function EditForm() {
+  let navigate = useNavigate();
   const [user, setUser] = useState();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -42,11 +43,38 @@ export default function EditForm() {
 
   console.log(user);
 
+  function submit() {
+    console.log("In submit!");
+    const defaultTeam = user.favorite_team;
+    const defaultConf = user.favorite_conference;
+    let payload;
+    if (!favoriteTeam && !favoriteConf) {
+      payload = {
+        username,
+        email,
+        favoriteTeam: defaultTeam,
+        favoriteConf: defaultConf,
+      };
+    } else if (!favoriteTeam) {
+      payload = { username, email, favoriteTeam: defaultTeam, favoriteConf };
+    } else if (!favoriteConf) {
+      payload = { username, email, favoriteTeam, favoriteConf: defaultConf };
+    } else {
+      payload = { username, email, favoriteTeam, favoriteConf };
+    }
+
+    console.log("Payload", payload);
+    editAccount(token, payload);
+    setTimeout(() => {
+      navigate("/account");
+    }, 750);
+  }
+
   return (
     <div className="register-form">
       <h2>Edit Account</h2>
       {/* {error && <p>{error}</p>} */}
-      <form>
+      <form action={submit}>
         {" "}
         {/*onSubmit={handleRegister}*/}
         <div>
@@ -97,16 +125,7 @@ export default function EditForm() {
             ))}
           </select>
         </div>
-        <button
-          onClick={() => {
-            console.log("Clicked!");
-            const payload = { username, email, favoriteTeam, favoriteConf };
-            console.log("Payload", payload);
-            editAccount(token, payload);
-          }}
-        >
-          Edit Account
-        </button>{" "}
+        <button type="submit">Edit Account</button>{" "}
         {/* Add parameters to function */}
       </form>
       <Link to="/account">Cancel</Link>
