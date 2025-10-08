@@ -70,6 +70,8 @@ main {
 .scores-header {
   text-align: center;
   margin-left: 30px;
+  color: white;
+  text-decoration: underline;
 }
 
 @keyframes bounce {
@@ -296,6 +298,13 @@ main {
   text-align: left;
 }
 
+.accp {
+  background-color: white;
+  width: 20%;
+  margin: auto;
+  border-radius: 5ch;
+}
+
 /*Leaderboard Page */
 
 table {
@@ -338,6 +347,11 @@ td {
 } */
 
 /* Bets Page */
+
+.myb {
+  color: white;
+  text-decoration: underline;
+}
 
 .bets-section {
   display: flex;
@@ -427,7 +441,7 @@ td {
   padding: 30px;
   background: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   font-family: Arial, sans-serif;
   text-align: center;
 }
@@ -479,7 +493,7 @@ td {
   padding: 30px;
   background: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   font-family: Arial, sans-serif;
 }
 
@@ -513,7 +527,7 @@ td {
 
 .login-form input:focus {
   border-color: #0066cc;
-  box-shadow: 0 0 4px rgba(0,102,204,0.3);
+  box-shadow: 0 0 4px rgba(0, 102, 204, 0.3);
 }
 
 .login-form button {
@@ -543,7 +557,7 @@ td {
   padding: 30px;
   background: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   font-family: Arial, sans-serif;
 }
 
@@ -579,7 +593,7 @@ td {
 .register-form input:focus,
 .register-form select:focus {
   border-color: #0066cc;
-  box-shadow: 0 0 4px rgba(0,102,204,0.3);
+  box-shadow: 0 0 4px rgba(0, 102, 204, 0.3);
 }
 
 .register-form button {
@@ -621,7 +635,8 @@ td {
   font-size: 2rem;
   font-weight: bold;
   margin-bottom: 1rem;
-  color: black;
+  color: white;
+  text-decoration: underline;
   text-align: center;
 }
 
@@ -685,4 +700,3 @@ td {
   font-weight: bold;
   color: #333;
 }
-

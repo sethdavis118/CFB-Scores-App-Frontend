@@ -33,7 +33,7 @@ export default function Bets() {
   return (
     <>
       <div>
-        <h1>My Bets</h1>
+        <h1 className="myb">My Bets</h1>
         <div className="bets-section">
           {bets.length !== 0 && betGames.length !== 0 ? (
             <ul className="bets-list">
