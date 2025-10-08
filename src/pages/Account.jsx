@@ -99,7 +99,7 @@ export default function Account() {
   }
 
   return (
-    <div>
+    <div className="accp">
       <h1>Account Page</h1>
       <p>Username: {user.username}</p>
       <p>Email: {user.email}</p>
